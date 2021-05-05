@@ -16,9 +16,23 @@
         <Grid.RowDefinitions>
             <RowDefinition Height="20"/>
             <RowDefinition Height="8*"/>
-            <RowDefinition Height="8*"/>
+            <RowDefinition Height="5*"/>
             <RowDefinition Height="15*"/>
             <RowDefinition Height="20"/>
         </Grid.RowDefinitions>
+
+        <Label Grid.Column="1" Grid.Row="1" Content="FruVa Fruchtimport" FontSize="32"
+               HorizontalAlignment="Center" VerticalAlignment="Center" />
+        <Button Grid.Column="2" Grid.Row="1" MinWidth="150" Content="New Order"
+                FontSize="18" Margin="32"/>
+
+        <Label Grid.Column="1" Grid.Row="2" Content="Recent Orders" FontSize="18"
+               HorizontalAlignment="center" VerticalAlignment="Center" />
+        <TextBox Grid.Column="2" Grid.Row="2" Text="Search.." FontSize="18" 
+                 Margin="32 22"/>
+        
+        <DataGrid Grid.Column="1" Grid.Row="3" Margin="10" Height="183" Grid.ColumnSpan="2"/>
+
+
     </Grid>
 </Window>

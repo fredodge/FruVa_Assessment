@@ -20,9 +20,14 @@ namespace WPFUI
     /// </summary>
     public partial class MainWindow : Window
     {
+        Logger log;
         public MainWindow()
         {
+            log = new Logger();
+
             InitializeComponent();
+
+            log.Log("MainWindow initialized.");
         }
     }
 }
