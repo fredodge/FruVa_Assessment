@@ -12,33 +12,34 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
-using System.Windows.Forms;
 using WPFUI.ViewModels;
-using WPFUI.Views;
 
-namespace WPFUI
+namespace WPFUI.Views
 {
     /// <summary>
-    /// Interaction logic for MainWindow.xaml
+    /// Interaction logic for Main.xaml
     /// </summary>
-    public partial class MainWindow : Window
+    public partial class MainView : UserControl
     {
         Logger Log;
-        
-        public MainWindow()
+        EditOrderViewModel vm;
+        public MainView()
         {
-            Log = new Logger();
-
             InitializeComponent();
-            Log.Log($"MainWindow initialised.");
+            Log = new Logger();
+            vm = new EditOrderViewModel();
+            vm.Load();
 
-            DataContext = new MainViewModel(); 
+            // Orders statt Articles zeigen
+            foreach (var articleGroup in vm.articles_context)
+            {
+                DatagridXAML.Items.Add(articleGroup.Value.First());
+            }
         }
 
         private void EditOrder(object sender, RoutedEventArgs e)
         {
             DataContext = new EditOrderViewModel();
         }
-
     }
 }
