@@ -35,9 +35,18 @@ namespace WPFUI
             DataContext = new MainViewModel(); 
         }
 
+        private void CreateOrder(object sender, RoutedEventArgs e)
+        {
+            DataContext = new CreateOrderViewModel();
+        }
         private void EditOrder(object sender, RoutedEventArgs e)
         {
             DataContext = new EditOrderViewModel();
+        }
+
+        private void MainView(object sender, RoutedEventArgs e)
+        {
+            DataContext = new MainViewModel();
         }
 
     }

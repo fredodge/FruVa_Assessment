@@ -22,24 +22,51 @@ namespace WPFUI.Views
     public partial class MainView : UserControl
     {
         Logger Log;
-        EditOrderViewModel vm;
+        MainViewModel vm;
         public MainView()
         {
             InitializeComponent();
-            Log = new Logger();
-            vm = new EditOrderViewModel();
-            vm.Load();
+        }
 
-            // Orders statt Articles zeigen
-            foreach (var articleGroup in vm.articles_context)
+        private void UserControl_Loaded(object sender, RoutedEventArgs e)
+        {
+            if (!System.ComponentModel.DesignerProperties.GetIsInDesignMode(this))
             {
-                DatagridXAML.Items.Add(articleGroup.Value.First());
+                Log = new Logger();
+                vm = new MainViewModel();
+                vm.Load();
+
+                foreach (var Order in vm.Orders)
+                {
+                    DatagridXAML.Items.Add(Order);
+                }
             }
+        }
+
+        public Orders GetSelectedOrder()
+        {
+            Orders Order = (Orders)DatagridXAML.Items.GetItemAt(DatagridXAML.SelectedIndex);
+            Log.Log($"Order: {Order.OrderName} {Order.Id}");
+            return Order;
         }
 
         private void EditOrder(object sender, RoutedEventArgs e)
         {
-            DataContext = new EditOrderViewModel();
+            DataContext = new CreateOrderViewModel();
+        }
+
+        private void DeleteOrder(object sender, RoutedEventArgs e)
+        {
+            if (DatagridXAML.SelectedItem != null)
+            {
+                Orders SelectedOrder = (Orders)DatagridXAML.Items.GetItemAt(DatagridXAML.SelectedIndex);
+                vm.DeleteOrder(SelectedOrder);
+                DatagridXAML.Items.Clear();
+                foreach (var Order in vm.Orders)
+                {
+                    DatagridXAML.Items.Add(Order);
+                }
+            }
         }
     }
 }
