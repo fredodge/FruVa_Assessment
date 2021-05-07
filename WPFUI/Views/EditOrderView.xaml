@@ -59,6 +59,9 @@
 
             <Label Name="Label" Content="{Binding CurrentRecipientName, Mode=TwoWay}" Grid.Column="5" Grid.ColumnSpan="2" FontSize="12" Height="20" Width="200" HorizontalAlignment="Center" Grid.Row="4" VerticalAlignment="Center"/>
 
+            <TextBox x:Name="currentRecipientsTextBox" Grid.Column="4" Grid.ColumnSpan="1" Margin="8" Grid.Row="3"
+                     Text="{Binding OrderName, Mode=TwoWay, NotifyOnValidationError=true, ValidatesOnExceptions=true}" />
+
             <DataGrid x:Name="DatagridChooseArticleXAML" Grid.Column="1" Grid.Row="5" Margin="10" Height="180" Grid.ColumnSpan="2" IsSynchronizedWithCurrentItem="True">
                 <DataGrid.Columns>
                     <DataGridTextColumn Header="Article" Binding="{Binding ArticleName}" />

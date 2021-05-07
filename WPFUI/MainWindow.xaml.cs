@@ -31,8 +31,6 @@ namespace WPFUI
 
             InitializeComponent();
             Log.Log($"MainWindow initialised.");
-
-            DataContext = new MainViewModel(); 
         }
 
         private void CreateOrder(object sender, RoutedEventArgs e)

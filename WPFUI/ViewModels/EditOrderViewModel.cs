@@ -13,6 +13,7 @@ namespace WPFUI.ViewModels
     {
         private Logger Log;
         public List<Articles> articles_context;
+        public List<Recipients> recipients;
         public Orders Order;
 
         public EditOrderViewModel()
@@ -22,13 +23,15 @@ namespace WPFUI.ViewModels
         }
         public EditOrderViewModel(Orders Order)
         {
-            Log = new Logger();
-            articles_context = new List<Articles>();
             this.Order = Order;
         }
 
         public void Load()
         {
+            Log = new Logger();
+            articles_context = new List<Articles>();
+            this.recipients = new List<Recipients>();
+
             using (var context = new FruVa_Assessment_APIEntities())
             {
                 context.Database.Connection.Open();
@@ -36,6 +39,11 @@ namespace WPFUI.ViewModels
                 foreach (var article in context.Articles)
                 {
                     articles_context.Add(article);
+                }
+
+                foreach (var recipient in context.Recipients)
+                {
+                    recipients.Add(recipient);
                 }
 
                 context.Database.Connection.Close();

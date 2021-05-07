@@ -1,18 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.ComponentModel;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
-using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
-using System.Windows.Shapes;
 using WPFUI.ViewModels;
 
 namespace WPFUI.Views
@@ -48,6 +37,11 @@ namespace WPFUI.Views
                 foreach (var article in vm.articles_context)
                 {
                     DatagridChooseArticleXAML.Items.Add(article);
+                }
+
+                foreach (var recipient in vm.recipients)
+                {
+                    DatagridChooseRecipientsXAML.Items.Add(recipient);
                 }
 
                 foreach (var Order in mvm.Orders)
@@ -127,6 +121,14 @@ namespace WPFUI.Views
                             OrdersOrderItems.Add(orderItem);
                         }
                     }
+                    foreach (var recipient in vm.recipients)
+                    {
+                        if (OrderBeingEdited.RecipientId == recipient.Id)
+                        {
+                            CurrentRecipient = recipient;
+                        }
+                    }
+                    currentRecipientsTextBox.Text = CurrentRecipient.Name;
 
                     DatagridCartXAML.Items.Clear();
 

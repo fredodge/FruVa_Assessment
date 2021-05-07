@@ -70,6 +70,7 @@ namespace WPFUI.Views
             {
                 CurrentRecipient = ((Recipients)DatagridChooseRecipientsXAML.Items.GetItemAt(DatagridChooseRecipientsXAML.SelectedIndex));
                 Log.Log($"Made Recipient {((Articles)DatagridChooseArticleXAML.Items.GetItemAt(DatagridChooseArticleXAML.SelectedIndex)).Id} to Recipient of the Order.");
+                recipientNameTextBox.Text = CurrentRecipient.Name;
             }
         }
 
@@ -111,6 +112,25 @@ namespace WPFUI.Views
                     }
                 }
             } catch(WarningException ex)
+            {
+                Log.Log($"Search Articles went wrong due to: {ex.Message}");
+            }
+        }
+
+        private void SearchRecipient(object sender, RoutedEventArgs e)
+        {
+            DatagridChooseRecipientsXAML.Items.Clear();
+            try
+            {
+                foreach (var recipient in vm.recipients)
+                {
+                    if (recipient.Name.Contains(searchRecipientsTextBox.Text))
+                    {
+                        DatagridChooseRecipientsXAML.Items.Add(recipient);
+                    }
+                }
+            }
+            catch (WarningException ex)
             {
                 Log.Log($"Search Articles went wrong due to: {ex.Message}");
             }

@@ -1,17 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
-using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
-using System.Windows.Shapes;
 using WPFUI.ViewModels;
 
 namespace WPFUI.Views
@@ -26,8 +16,16 @@ namespace WPFUI.Views
         public MainView()
         {
             InitializeComponent();
-        }
+            Log = new Logger();
+            vm = new MainViewModel();
+            vm.Load();
 
+            foreach (var Order in vm.Orders)
+            {
+                DatagridXAML.Items.Add(Order);
+            }
+        }
+        /*
         private void UserControl_Loaded(object sender, RoutedEventArgs e)
         {
             if (!System.ComponentModel.DesignerProperties.GetIsInDesignMode(this))
@@ -42,7 +40,7 @@ namespace WPFUI.Views
                 }
             }
         }
-
+        */
         public Orders GetSelectedOrder()
         {
             if (DatagridXAML.SelectedItem is null) { return null; }
