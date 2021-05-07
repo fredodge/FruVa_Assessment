@@ -43,7 +43,6 @@ namespace WPFUI
         {
             DataContext = new EditOrderViewModel();
         }
-
         private void MainView(object sender, RoutedEventArgs e)
         {
             DataContext = new MainViewModel();

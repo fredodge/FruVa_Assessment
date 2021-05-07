@@ -20,7 +20,7 @@ namespace WPFUI.Views
     /// <summary>
     /// Interaction logic for EditOrderView.xaml
     /// </summary>
-    public partial class EditOrderView : UserControl, INotifyPropertyChanged
+    public partial class EditOrderView : UserControl
     {
         EditOrderViewModel vm;
         MainViewModel mvm;
@@ -28,48 +28,21 @@ namespace WPFUI.Views
         Recipients CurrentRecipient;
         Orders OrderBeingEdited;
 
-        private string _name;
-        string CurrentRecipientName
-        {
-            get
-            {
-                return _name;
-            }
-
-            set
-            {
-                if (_name == value) return;
-
-                _name = value;
-                OnPropertyChanged("CurrentRecipientName");
-            }
-        }
-        public event PropertyChangedEventHandler PropertyChanged;
-
-        protected virtual void OnPropertyChanged(string propertyName)
-        {
-            if (PropertyChanged != null)
-            {
-                PropertyChanged(this, new PropertyChangedEventArgs(propertyName));
-            }
-        }
-
         public EditOrderView()
         {
-            Log = new Logger();
             InitializeComponent();
-            CurrentRecipientName = "Choose Recipient";
-            CurrentRecipient = new Recipients();
-            OrderBeingEdited = new Orders();
         }
 
         private void UserControl_Loaded(object sender, RoutedEventArgs e)
         {
             if (!System.ComponentModel.DesignerProperties.GetIsInDesignMode(this))
             {
+                Log = new Logger();
+                CurrentRecipient = new Recipients();
+                OrderBeingEdited = new Orders();
                 vm = new EditOrderViewModel();
-                vm.Load();
                 mvm = new MainViewModel();
+                vm.Load();
                 mvm.Load();
 
                 foreach (var article in vm.articles_context)
@@ -93,14 +66,13 @@ namespace WPFUI.Views
             if (DatagridChooseArticleXAML.SelectedItem != null)
             {
                 DatagridCartXAML.Items.Add(DatagridChooseArticleXAML.SelectedItem);
-                Log.Log($"Added: {((Articles)DatagridChooseArticleXAML.Items.GetItemAt(DatagridChooseArticleXAML.SelectedIndex)).ArticleName}");
+                Log.Log($"Added article {((Articles)DatagridChooseArticleXAML.Items.GetItemAt(DatagridChooseArticleXAML.SelectedIndex)).Id} to Cart.");
             }
 
             if (DatagridChooseRecipientsXAML.SelectedItem != null)
             {
                 CurrentRecipient = ((Recipients)DatagridChooseRecipientsXAML.Items.GetItemAt(DatagridChooseRecipientsXAML.SelectedIndex));
-                CurrentRecipientName = CurrentRecipient.Name;
-                Log.Log($"Recipients :: Set :: { CurrentRecipientName }");
+                Log.Log($"Recipient { CurrentRecipient.Id } is now the Recipient of the Order.");
             }
         }
 
@@ -108,49 +80,64 @@ namespace WPFUI.Views
         {
             if (DatagridCartXAML.SelectedItem != null)
             {
-                string removed = $"Removed: {((Articles)DatagridCartXAML.Items.GetItemAt(DatagridCartXAML.SelectedIndex)).ArticleName}";
+                string removed = $"{((Articles)DatagridCartXAML.Items.GetItemAt(DatagridCartXAML.SelectedIndex)).Id}";
                 DatagridCartXAML.Items.Remove(DatagridCartXAML.SelectedItem);
-                Log.Log(removed);
+                Log.Log($"Removed article { removed } from Cart.");
             }
         }
 
         private void EditOrder(object sender, RoutedEventArgs e)
         {
-            List<Articles> Articles = new List<Articles>();
-            foreach (var item in DatagridCartXAML.Items)
+            try
             {
-                Articles.Add((Articles)item);
-            }
-            vm.EditOrder(Articles, OrderBeingEdited.Id);
-            DatagridChooseOrderXAML.Items.Clear();
-            DatagridCartXAML.Items.Clear();
-            mvm.Load();
-            foreach (var Order in mvm.Orders)
+                List<Articles> Articles = new List<Articles>();
+                foreach (var item in DatagridCartXAML.Items)
+                {
+                    Articles.Add((Articles)item);
+                }
+                vm.EditOrder(Articles, OrderBeingEdited.Id);
+                
+                DatagridChooseOrderXAML.Items.Clear();
+                DatagridCartXAML.Items.Clear();
+                
+                mvm.Load();
+                foreach (var Order in mvm.Orders)
+                {
+                    DatagridChooseOrderXAML.Items.Add(Order);
+                }
+            } catch (Exception ex)
             {
-                DatagridChooseOrderXAML.Items.Add(Order);
+                Log.Log($"Editing Order went wrong due to: {ex.Message}");
             }
         }
 
         private void StartEdit(object sender, RoutedEventArgs e)
         {
-            if (DatagridChooseOrderXAML.SelectedItem != null)
+            try
             {
-                if (OrderBeingEdited != null) { Log.Log("proof");  }
-                var gridEntry = DatagridChooseOrderXAML.Items.GetItemAt(DatagridChooseOrderXAML.SelectedIndex);
-                OrderBeingEdited = (Orders)gridEntry;
-                List<OrderItems> OrdersOrderItems = new List<OrderItems>();
-                foreach( var orderItem in mvm.OrderItems)
+                if (DatagridChooseOrderXAML.SelectedItem != null)
                 {
-                    if (orderItem.OrderId == OrderBeingEdited.Id)
+                    OrderBeingEdited = (Orders)DatagridChooseOrderXAML.Items.GetItemAt(DatagridChooseOrderXAML.SelectedIndex);
+                    List<OrderItems> OrdersOrderItems = new List<OrderItems>();
+
+                    foreach (var orderItem in mvm.OrderItems)
                     {
-                        OrdersOrderItems.Add(orderItem);
+                        if (orderItem.OrderId == OrderBeingEdited.Id)
+                        {
+                            OrdersOrderItems.Add(orderItem);
+                        }
+                    }
+
+                    DatagridCartXAML.Items.Clear();
+
+                    foreach (var item in OrdersOrderItems)
+                    {
+                        DatagridCartXAML.Items.Add(vm.articles_context.Find(delegate (Articles article) { return article.Id == item.ArticleId; }));
                     }
                 }
-                DatagridCartXAML.Items.Clear();
-                foreach ( var item in OrdersOrderItems )
-                {
-                    DatagridCartXAML.Items.Add(vm.articles_context.Find(delegate (Articles article) { return article.Id == item.ArticleId; }));
-                }
+            } catch (Exception ex)
+            {
+                Log.Log($"Order can not be edited due to: {ex.Message}");
             }
         }
     }

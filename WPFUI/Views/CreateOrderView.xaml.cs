@@ -63,12 +63,13 @@ namespace WPFUI.Views
             if (DatagridChooseArticleXAML.SelectedItem != null)
             {
                 DatagridCartXAML.Items.Add(DatagridChooseArticleXAML.SelectedItem);
-                Log.Log($"Added: {((Articles) DatagridChooseArticleXAML.Items.GetItemAt(DatagridChooseArticleXAML.SelectedIndex)).ArticleName}");
+                Log.Log($"Added Article {((Articles) DatagridChooseArticleXAML.Items.GetItemAt(DatagridChooseArticleXAML.SelectedIndex)).Id} to Cart.");
             }
 
             if (DatagridChooseRecipientsXAML.SelectedItem != null)
             {
                 CurrentRecipient = ((Recipients)DatagridChooseRecipientsXAML.Items.GetItemAt(DatagridChooseRecipientsXAML.SelectedIndex));
+                Log.Log($"Made Recipient {((Articles)DatagridChooseArticleXAML.Items.GetItemAt(DatagridChooseArticleXAML.SelectedIndex)).Id} to Recipient of the Order.");
             }
         }
 
@@ -76,20 +77,25 @@ namespace WPFUI.Views
         {
             if (DatagridCartXAML.SelectedItem != null)
             {
-                string removed = $"Removed: {((Articles)DatagridCartXAML.Items.GetItemAt(DatagridCartXAML.SelectedIndex)).ArticleName}";
+                string removed = $"Removed: {((Articles)DatagridCartXAML.Items.GetItemAt(DatagridCartXAML.SelectedIndex)).Id}";
                 DatagridCartXAML.Items.Remove(DatagridCartXAML.SelectedItem);
-                Log.Log(removed);
+                Log.Log($"Removed Article { removed } from Cart.");
             }
         }
 
         private void CreateOrder(object sender, RoutedEventArgs e)
         {
-            List<Articles> Articles = new List<Articles>();
-            foreach(var item in DatagridCartXAML.Items)
+            try {
+                List<Articles> Articles = new List<Articles>();
+                foreach(var item in DatagridCartXAML.Items)
+                {
+                    Articles.Add((Articles)item);
+                }
+                vm.CreateOrder(Articles, CurrentRecipient, OrderName);
+            } catch (Exception ex)
             {
-                Articles.Add((Articles)item);
+                Log.Log($"Create Order went wrong due to: {ex.Message}");
             }
-            vm.CreateOrder(Articles, CurrentRecipient, OrderName);
         }
 
         private void SearchArticle(object sender, RoutedEventArgs e)
@@ -106,7 +112,7 @@ namespace WPFUI.Views
                 }
             } catch(WarningException ex)
             {
-                Log.Log($"Search Articles went wrong due to: {ex}");
+                Log.Log($"Search Articles went wrong due to: {ex.Message}");
             }
         }
     }

@@ -45,27 +45,29 @@ namespace WPFUI.Views
 
         public Orders GetSelectedOrder()
         {
+            if (DatagridXAML.SelectedItem is null) { return null; }
             Orders Order = (Orders)DatagridXAML.Items.GetItemAt(DatagridXAML.SelectedIndex);
-            Log.Log($"Order: {Order.OrderName} {Order.Id}");
+            Log.Log($"Selected Order {Order.Id}");
             return Order;
-        }
-
-        private void EditOrder(object sender, RoutedEventArgs e)
-        {
-            DataContext = new CreateOrderViewModel();
         }
 
         private void DeleteOrder(object sender, RoutedEventArgs e)
         {
-            if (DatagridXAML.SelectedItem != null)
+            try
             {
-                Orders SelectedOrder = (Orders)DatagridXAML.Items.GetItemAt(DatagridXAML.SelectedIndex);
-                vm.DeleteOrder(SelectedOrder);
-                DatagridXAML.Items.Clear();
-                foreach (var Order in vm.Orders)
+                if (DatagridXAML.SelectedItem != null)
                 {
-                    DatagridXAML.Items.Add(Order);
+                    Orders SelectedOrder = (Orders)DatagridXAML.Items.GetItemAt(DatagridXAML.SelectedIndex);
+                    vm.DeleteOrder(SelectedOrder);
+                    DatagridXAML.Items.Clear();
+                    foreach (var Order in vm.Orders)
+                    {
+                        DatagridXAML.Items.Add(Order);
+                    }
                 }
+            } catch (Exception ex)
+            {
+                Log.Log($"Delete Order failed due to {ex}");
             }
         }
     }
