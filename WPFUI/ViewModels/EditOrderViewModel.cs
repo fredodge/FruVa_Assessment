@@ -6,20 +6,22 @@ using System.Threading.Tasks;
 using System.Windows.Forms;
 using System.Data.Entity;
 using System.ComponentModel;
+using WPFUI.API;
+using WPFUI.Models;
+using System.Collections.ObjectModel;
 
 namespace WPFUI.ViewModels
 {
     class EditOrderViewModel : IDisposable
     {
         private Logger Log;
-        public List<Articles> articles_context;
-        public List<Recipients> recipients;
+        public ArticlesAPI articleAPI;
+        public RecipientAPI recipientAPI;
         public Orders Order;
 
         public EditOrderViewModel()
         {
             Log = new Logger();
-            articles_context = new List<Articles>();
         }
         public EditOrderViewModel(Orders Order)
         {
@@ -28,27 +30,19 @@ namespace WPFUI.ViewModels
 
         public void Load()
         {
-            Log = new Logger();
-            articles_context = new List<Articles>();
-            this.recipients = new List<Recipients>();
+            articleAPI = new ArticlesAPI();
+            recipientAPI = new RecipientAPI();
+            Log.Log("API loaded.");
+        }
 
-            using (var context = new FruVa_Assessment_APIEntities())
-            {
-                context.Database.Connection.Open();
+        public async Task<List<Recipient>> GetRecipientsAsync()
+        {
+            return await recipientAPI.GetRecipientsAsync();
+        }
 
-                foreach (var article in context.Articles)
-                {
-                    articles_context.Add(article);
-                }
-
-                foreach (var recipient in context.Recipients)
-                {
-                    recipients.Add(recipient);
-                }
-
-                context.Database.Connection.Close();
-            }
-            Log.Log("Articles loaded.");
+        public async Task<List<Article>> GetArticlesAsync()
+        {
+            return await articleAPI.GetArticlesAsync();
         }
 
         public void EditOrder(List<Articles> Articles, Guid OrderId)

@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Windows;
 using System.Windows.Controls;
+using WPFUI.Models;
 using WPFUI.ViewModels;
 
 namespace WPFUI.Views
@@ -14,7 +15,7 @@ namespace WPFUI.Views
         EditOrderViewModel vm;
         MainViewModel mvm;
         Logger Log;
-        Recipients CurrentRecipient;
+        Recipient CurrentRecipient;
         Orders OrderBeingEdited;
 
         public EditOrderView()
@@ -22,27 +23,20 @@ namespace WPFUI.Views
             InitializeComponent();
         }
 
-        private void UserControl_Loaded(object sender, RoutedEventArgs e)
+        private async void UserControl_Loaded(object sender, RoutedEventArgs e)
         {
             if (!System.ComponentModel.DesignerProperties.GetIsInDesignMode(this))
             {
                 Log = new Logger();
-                CurrentRecipient = new Recipients();
+                CurrentRecipient = new Recipient();
                 OrderBeingEdited = new Orders();
                 vm = new EditOrderViewModel();
                 mvm = new MainViewModel();
                 vm.Load();
                 mvm.Load();
 
-                foreach (var article in vm.articles_context)
-                {
-                    DatagridChooseArticleXAML.Items.Add(article);
-                }
-
-                foreach (var recipient in vm.recipients)
-                {
-                    DatagridChooseRecipientsXAML.Items.Add(recipient);
-                }
+                (await vm.GetArticlesAsync()).ForEach(article => DatagridChooseArticleXAML.Items.Add(article));
+                (await vm.GetRecipientsAsync()).ForEach(recipient => DatagridChooseRecipientsXAML.Items.Add(recipient));
 
                 foreach (var Order in mvm.Orders)
                 {
@@ -65,7 +59,7 @@ namespace WPFUI.Views
 
             if (DatagridChooseRecipientsXAML.SelectedItem != null)
             {
-                CurrentRecipient = ((Recipients)DatagridChooseRecipientsXAML.Items.GetItemAt(DatagridChooseRecipientsXAML.SelectedIndex));
+                CurrentRecipient = ((Recipient)DatagridChooseRecipientsXAML.Items.GetItemAt(DatagridChooseRecipientsXAML.SelectedIndex));
                 Log.Log($"Recipient { CurrentRecipient.Id } is now the Recipient of the Order.");
             }
         }
@@ -120,22 +114,23 @@ namespace WPFUI.Views
                         {
                             OrdersOrderItems.Add(orderItem);
                         }
-                    }
-                    foreach (var recipient in vm.recipients)
+                    }/*
+                    foreach (var recipient in (await vm.GetRecipientsAsync()))
                     {
                         if (OrderBeingEdited.RecipientId == recipient.Id)
                         {
                             CurrentRecipient = recipient;
                         }
-                    }
+                    }*/
                     currentRecipientsTextBox.Text = CurrentRecipient.Name;
 
                     DatagridCartXAML.Items.Clear();
 
+                    /*
                     foreach (var item in OrdersOrderItems)
                     {
                         DatagridCartXAML.Items.Add(vm.articles_context.Find(delegate (Articles article) { return article.Id == item.ArticleId; }));
-                    }
+                    }*/
                 }
             } catch (Exception ex)
             {

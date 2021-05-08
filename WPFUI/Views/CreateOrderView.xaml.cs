@@ -34,22 +34,15 @@ namespace WPFUI.Views
             CurrentRecipient = new Recipients();
         }
 
-        private void UserControl_Loaded(object sender, RoutedEventArgs e)
+        private async void UserControl_Loaded(object sender, RoutedEventArgs e)
         {
             if (!System.ComponentModel.DesignerProperties.GetIsInDesignMode(this))
             {
                 vm = new CreateOrderViewModel();
                 vm.Load();
 
-                foreach (var article in vm.articles_context)
-                {
-                    DatagridChooseArticleXAML.Items.Add(article);
-                }
-
-                foreach (var recipient in vm.recipients)
-                {
-                    DatagridChooseRecipientsXAML.Items.Add(recipient);
-                }
+                (await vm.GetArticlesAsync()).ForEach(article => DatagridChooseArticleXAML.Items.Add(article));
+                (await vm.GetRecipientsAsync()).ForEach(recipient => DatagridChooseRecipientsXAML.Items.Add(recipient));
             }
 
             // 	//Load your data here and assign the result to the CollectionViewSource.
@@ -104,13 +97,13 @@ namespace WPFUI.Views
             DatagridChooseArticleXAML.Items.Clear();
             try
             {
-                foreach (var article in vm.articles_context)
+        /*        foreach (var article in vm.articles_context)
                 {
                     if (article.SearchQuery.Contains(searchArticlesTextBox.Text))
                     {
                         DatagridChooseArticleXAML.Items.Add(article);
                     }
-                }
+                }*/
             } catch(WarningException ex)
             {
                 Log.Log($"Search Articles went wrong due to: {ex.Message}");
@@ -121,14 +114,14 @@ namespace WPFUI.Views
         {
             DatagridChooseRecipientsXAML.Items.Clear();
             try
-            {
+            {/*
                 foreach (var recipient in vm.recipients)
                 {
                     if (recipient.Name.Contains(searchRecipientsTextBox.Text))
                     {
                         DatagridChooseRecipientsXAML.Items.Add(recipient);
                     }
-                }
+                }*/
             }
             catch (WarningException ex)
             {

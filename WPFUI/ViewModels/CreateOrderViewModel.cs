@@ -6,41 +6,36 @@ using System.Threading.Tasks;
 using System.Windows.Forms;
 using System.Data.Entity;
 using System.ComponentModel;
+using WPFUI.Models;
+using WPFUI.API;
 
 namespace WPFUI.ViewModels
 {
     class CreateOrderViewModel : IDisposable
     {
         private Logger Log;
-        public List<Articles> articles_context;
-        public List<Recipients> recipients;
+        public ArticlesAPI articleAPI;
+        public RecipientAPI recipientAPI;
 
         public CreateOrderViewModel()
         {
             Log = new Logger();
-            articles_context = new List<Articles>();
-            recipients = new List<Recipients>();
         }
 
         public void Load()
         {
-            using (var context = new FruVa_Assessment_APIEntities())
-            {
-                context.Database.Connection.Open();
+            articleAPI = new ArticlesAPI();
+            recipientAPI = new RecipientAPI();
+            Log.Log("API loaded.");
+        }
+        public async Task<List<Recipient>> GetRecipientsAsync()
+        {
+            return await recipientAPI.GetRecipientsAsync();
+        }
 
-                foreach ( var article in context.Articles)
-                {
-                    articles_context.Add(article);
-                }
-
-                foreach ( var recipient in context.Recipients)
-                {
-                    recipients.Add(recipient);
-                }
-
-                context.Database.Connection.Close();
-            }
-            Log.Log("Articles & Recipients loaded.");
+        public async Task<List<Article>> GetArticlesAsync()
+        {
+            return await articleAPI.GetArticlesAsync();
         }
 
         public void CreateOrder(List<Articles> Articles, Recipients Recipients, string OrderName) 
