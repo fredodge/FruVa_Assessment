@@ -12,8 +12,8 @@
         <DataTemplate x:Name="OrderViewTemplate" DataType="{x:Type viewmodels:OrderViewModel}">
             <views:OrderView DataContext="{Binding}"/>
         </DataTemplate>
-        <DataTemplate x:Name="CreateOrderViewTemplate" DataType="{x:Type viewmodels:CreateOrderViewModel}">
-            <views:CreateOrderView DataContext="{Binding}"/>
+        <DataTemplate x:Name="SummaryViewTemplate" DataType="{x:Type viewmodels:SummaryViewModel}">
+            <views:SummaryView DataContext="{Binding}"/>
         </DataTemplate>
         <DataTemplate x:Name="EditOrderViewTemplate" DataType="{x:Type viewmodels:EditOrderViewModel}">
             <views:EditOrderView DataContext="{Binding}"/>

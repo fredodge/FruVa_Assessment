@@ -15,10 +15,10 @@ namespace WPFUI.ViewModels
     class EditOrderRecipientViewModel : IDisposable
     {
         private Logger Log;
-        private RecipientAPI recipientAPI;
-        private OrdersAPI ordersAPI;
-        private Order order;
-        private List<OrderItem> orderItems;
+        private RecipientService recipientAPI;
+        private OrderService ordersAPI;
+        public Order order { get; set; }
+        public List<OrderItem> orderItems { get; set; }
 
         public EditOrderRecipientViewModel()
         {
@@ -40,14 +40,18 @@ namespace WPFUI.ViewModels
 
         public void Load()
         {
-            recipientAPI = new RecipientAPI();
-            ordersAPI = new OrdersAPI();
-            Log.Log("API loaded.");
+            recipientAPI = new RecipientService();
+            ordersAPI = new OrderService();
         }
 
         public async Task<List<Recipient>> GetRecipientsAsync()
         {
             return await recipientAPI.GetRecipientsAsync();
+        }
+
+        public async Task<Recipient> GetRecipientByIdAsync(Guid recipientId)
+        {
+            return await recipientAPI.GetRecipientByIdAsync(recipientId);
         }
 
         public async Task<List<Order>> GetOrdersAsync()

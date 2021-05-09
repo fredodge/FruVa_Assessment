@@ -30,7 +30,7 @@
 
 
         <Button Grid.Column="0" Grid.Row="2" Margin="8" Content="Change" Click="ChangeRecipient" />
-        <Label Grid.Column="1" Grid.Row="2" Margin="8" x:Name="RecipientName" Width="180" Content="Recipient"/>
+        <Label Grid.Column="1" Grid.Row="2" Margin="8" x:Name="labelRecipientName" Width="180" Content="Recipient"/>
         <Button Grid.Column="2" Grid.Row="2" Margin="8" Content="Back" Click="Back" />
         <Button Grid.Column="3" Grid.Row="2" Margin="8" Content="Next" Click="ContinueWithConclusion" />
     </Grid>

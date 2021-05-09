@@ -25,7 +25,7 @@ namespace WPFUI.Views
             if (!DesignerProperties.GetIsInDesignMode(this))
             {
                 Log = new Logger();
-                vm = new EditOrderArticlesViewModel();
+                vm = (EditOrderArticlesViewModel) Application.Current.MainWindow.DataContext;
                 vm.Load();
                 for (int i = 1; i < 100; i++)
                 {
@@ -33,6 +33,7 @@ namespace WPFUI.Views
                     removeArticleAmount.Items.Add(i);
                 }
                 (await vm.GetArticlesAsync()).ForEach(article => DatagridChooseArticleXAML.Items.Add(article));
+                vm.orderItems.ForEach(async orderItem => AddArticleOrderItem(CreateArticleOrderItem(await vm.GetArticleByIdAsync(orderItem.ArticleId), orderItem)));
             }
         }
 
@@ -58,16 +59,22 @@ namespace WPFUI.Views
             {
                 var article = (Article)DatagridChooseArticleXAML.Items.GetItemAt(DatagridChooseArticleXAML.SelectedIndex);
                 var orderItem = new OrderItem();
-                orderItem.OrderId = vm.orderEditObject.Id;
+                orderItem.OrderId = vm.order.Id;
                 orderItem.ArticleId = article.Id;
-                orderItem.Amount = (int) addArticleAmount.SelectedItem;
-                vm.orderItemsEditList.Add(orderItem);
+                orderItem.Amount = addArticleAmount.SelectedItem != null ? (int) addArticleAmount.SelectedItem : 1;
+                vm.orderItems.Add(orderItem);
 
-                DatagridCartXAML.Items.Add(CreateArticleOrderItem(article, orderItem));
+                AddArticleOrderItem(CreateArticleOrderItem(article, orderItem));
 
                 Log.Log($"Added {orderItem.Amount} times {((Article)DatagridChooseArticleXAML.Items.GetItemAt(DatagridChooseArticleXAML.SelectedIndex)).Id} to Cart.");
                 clearSelections();
             }
+        }
+
+        private void AddArticleOrderItem(ArticleOrderItem articleOrderItem)
+        {
+            Log.Log($"I Add {articleOrderItem.ArticleName}");
+            DatagridCartXAML.Items.Add(articleOrderItem);
         }
 
         private void RemoveItem(object sender, RoutedEventArgs e)
@@ -80,7 +87,7 @@ namespace WPFUI.Views
                 DatagridCartXAML.Items.Remove(DatagridCartXAML.SelectedItem);
                 if (articleOrderItem.Amount - removeAmount < 1)
                 {
-                    vm.orderItemsEditList.Remove(((ArticleOrderItem)DatagridCartXAML.Items.GetItemAt(DatagridCartXAML.SelectedIndex)).OrderItem);
+                    vm.orderItems.Remove(((ArticleOrderItem)DatagridCartXAML.Items.GetItemAt(DatagridCartXAML.SelectedIndex)).OrderItem);
                 } else
                 {
                     articleOrderItem.Amount -= removeAmount;
@@ -100,7 +107,7 @@ namespace WPFUI.Views
 
         private void ContinueWithRecipientControl(object sender, RoutedEventArgs e)
         {
-            Application.Current.MainWindow.DataContext = new EditOrderRecipientViewModel(vm.orderEditObject, vm.orderItemsEditList);
+            Application.Current.MainWindow.DataContext = new EditOrderRecipientViewModel(vm.order, vm.orderItems);
         }
 
         private ArticleOrderItem CreateArticleOrderItem(Article article, OrderItem orderItem)

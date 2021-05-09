@@ -14,10 +14,10 @@ namespace WPFUI.ViewModels
     class CreateOrderViewModel : IDisposable
     {
         private Logger Log;
-        private ArticlesAPI articleAPI;
-        private RecipientAPI recipientAPI;
-        private OrdersAPI ordersAPI;
-        private OrderItemsService orderItemsService; 
+        private ArticleService articleAPI;
+        private RecipientService recipientAPI;
+        private OrderService ordersAPI;
+        private OrderItemService orderItemsService; 
 
         public CreateOrderViewModel()
         {
@@ -26,10 +26,10 @@ namespace WPFUI.ViewModels
 
         public void Load()
         {
-            articleAPI = new ArticlesAPI();
-            recipientAPI = new RecipientAPI();
-            ordersAPI = new OrdersAPI();
-            orderItemsService = new OrderItemsService();
+            articleAPI = new ArticleService();
+            recipientAPI = new RecipientService();
+            ordersAPI = new OrderService();
+            orderItemsService = new OrderItemService();
             Log.Log("API loaded.");
         }
         public async Task<List<Recipient>> GetRecipientsAsync()

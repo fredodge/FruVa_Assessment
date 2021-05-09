@@ -10,13 +10,13 @@ using System.Collections.Generic;
 
 namespace WPFUI.API
 {
-    class ArticlesAPI
+    class ArticleService
     {
         private const string URL = "http://localhost:8080/api/";
         HttpClient client = new HttpClient();
         JsonSerializer jsonSerializer = new JsonSerializer();
 
-        public ArticlesAPI()
+        public ArticleService()
         {
             client.BaseAddress = new Uri(URL);
             client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));

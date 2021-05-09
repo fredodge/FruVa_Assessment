@@ -10,13 +10,13 @@ using System.Collections.Generic;
 
 namespace WPFUI.API
 {
-    class RecipientAPI
+    class RecipientService
     {
         private const string URL = "http://localhost:8080/api/";
         HttpClient client = new HttpClient();
         JsonSerializer jsonSerializer = new JsonSerializer();
 
-        public RecipientAPI()
+        public RecipientService()
         {
             client.BaseAddress = new Uri(URL);
             client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
@@ -38,6 +38,27 @@ namespace WPFUI.API
                 var jsonReader = new JsonTextReader(streamReader);
 
                 Recipient = jsonSerializer.Deserialize<List<Recipient>>(jsonReader);
+            }
+
+            return Recipient;
+        }
+
+        [HttpGet]
+        public async Task<Recipient> GetRecipientByIdAsync(Guid recipientId)
+        {
+            Recipient Recipient = null;
+            HttpResponseMessage response = await client.GetAsync($"recipients/{recipientId}");
+
+            response.EnsureSuccessStatusCode();
+
+            if (response.Content is object && response.Content.Headers.ContentType.MediaType == "application/json")
+            {
+                var contentStream = await response.Content.ReadAsStreamAsync();
+
+                var streamReader = new StreamReader(contentStream);
+                var jsonReader = new JsonTextReader(streamReader);
+
+                Recipient = jsonSerializer.Deserialize<Recipient>(jsonReader);
             }
 
             return Recipient;

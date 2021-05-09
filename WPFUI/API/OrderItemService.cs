@@ -10,13 +10,13 @@ using WPFUI.Models;
 
 namespace WPFUI.API
 {
-    class OrderItemsService
+    class OrderItemService
     {
         private const string URLOrder = "https://localhost:5001/api/";
         HttpClient client = new HttpClient();
         JsonSerializer jsonSerializer = new JsonSerializer();
 
-        public OrderItemsService()
+        public OrderItemService()
         {
             client.BaseAddress = new Uri(URLOrder);
             client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));

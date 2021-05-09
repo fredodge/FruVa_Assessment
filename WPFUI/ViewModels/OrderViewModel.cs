@@ -9,13 +9,13 @@ namespace WPFUI.ViewModels
     class OrderViewModel
     {
         private Logger Log;
-        public OrdersAPI ordersAPI;
-        public OrderItemsService orderItemsService;
+        public OrderService ordersAPI;
+        public OrderItemService orderItemsService;
 
         public OrderViewModel() {
             Log = new Logger();
-            ordersAPI = new OrdersAPI();
-            orderItemsService = new OrderItemsService();
+            ordersAPI = new OrderService();
+            orderItemsService = new OrderItemService();
         }
 
         public async Task<List<Order>> GetOrdersAsync()

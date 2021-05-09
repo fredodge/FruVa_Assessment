@@ -9,30 +9,40 @@ namespace WPFUI.ViewModels
     class EditOrderArticlesViewModel : IDisposable
     {
         private Logger Log;
-        private ArticlesAPI articleAPI;
-        private OrderItemsService orderItemsService;
-        public Order orderEditObject { get; set; }
-        public List<OrderItem> orderItemsEditList { get; set; }
+        private ArticleService articleAPI;
+        private OrderItemService orderItemsService;
+        public Order order { get; set; }
+        public List<OrderItem> orderItems { get; set; }
 
         public EditOrderArticlesViewModel()
         {
+            Log = new Logger();
+            this.order = new Order();
+            this.orderItems = new List<OrderItem>();
         }
 
         public EditOrderArticlesViewModel(Order order)
         {
-            orderEditObject = order;
+            Log = new Logger();
+            this.order = order;
+            this.orderItems = new List<OrderItem>();
+        }
+
+        public EditOrderArticlesViewModel(Order order, List<OrderItem> orderItems)
+        {
+            Log = new Logger();
+            this.order = order;
+            this.orderItems = orderItems;
         }
 
         public void Load()
         {
-            Log = new Logger();
-            articleAPI = new ArticlesAPI();
-            orderItemsService = new OrderItemsService();
-            if (orderEditObject == null) { 
-                orderEditObject = new Order();
-                orderEditObject.Id = Guid.NewGuid();
+            articleAPI = new ArticleService();
+            orderItemsService = new OrderItemService();
+            if (order == null) {
+                order = new Order();
+                order.Id = Guid.NewGuid();
             }
-            orderItemsEditList = new List<OrderItem>();
         }
 
         public async Task<List<Article>> GetArticlesAsync()

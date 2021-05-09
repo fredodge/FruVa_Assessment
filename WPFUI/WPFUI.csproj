@@ -121,10 +121,10 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
-    <Compile Include="API\ArticlesAPI.cs" />
-    <Compile Include="API\OrderItemsService.cs" />
-    <Compile Include="API\OrdersAPI.cs" />
-    <Compile Include="API\RecipientAPI.cs" />
+    <Compile Include="API\ArticleService.cs" />
+    <Compile Include="API\OrderItemService.cs" />
+    <Compile Include="API\OrderService.cs" />
+    <Compile Include="API\RecipientService.cs" />
     <Compile Include="Helper\OrderHelper.cs" />
     <Compile Include="Models\Article.cs" />
     <Compile Include="Models\ArticleOrderItem.cs" />
@@ -137,6 +137,7 @@
     <Compile Include="ViewModels\EditOrderRecipientViewModel.cs" />
     <Compile Include="ViewModels\EditOrderViewModel.cs" />
     <Compile Include="ViewModels\OrderViewModel.cs" />
+    <Compile Include="ViewModels\SummaryViewModel.cs" />
     <Compile Include="Views\CreateOrderView.xaml.cs">
       <DependentUpon>CreateOrderView.xaml</DependentUpon>
     </Compile>
@@ -151,6 +152,9 @@
     </Compile>
     <Compile Include="Views\OrderView.xaml.cs">
       <DependentUpon>OrderView.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Views\SummaryView.xaml.cs">
+      <DependentUpon>SummaryView.xaml</DependentUpon>
     </Compile>
     <Page Include="MainWindow.xaml">
       <Generator>MSBuild:Compile</Generator>
@@ -181,6 +185,10 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="Views\OrderView.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Views\SummaryView.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
