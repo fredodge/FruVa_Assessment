@@ -13,8 +13,8 @@ namespace WPFUI.API
     class ArticlesAPI
     {
         private const string URL = "http://localhost:8080/api/";
-        static HttpClient client = new HttpClient();
-        static JsonSerializer jsonSerializer = new JsonSerializer();
+        HttpClient client = new HttpClient();
+        JsonSerializer jsonSerializer = new JsonSerializer();
 
         public ArticlesAPI()
         {
@@ -41,6 +41,27 @@ namespace WPFUI.API
             }
 
             return articles;
+        }
+
+        [HttpGet]
+        public async Task<Article> GetArticleByIdAsync(Guid Id)
+        {
+            Article article = null;
+            HttpResponseMessage response = client.GetAsync($"articles/{Id}").Result;
+
+            response.EnsureSuccessStatusCode();
+
+            if (response.Content is object && response.Content.Headers.ContentType.MediaType == "application/json")
+            {
+                var contentStream = await response.Content.ReadAsStreamAsync();
+
+                var streamReader = new StreamReader(contentStream);
+                var jsonReader = new JsonTextReader(streamReader);
+
+                article = jsonSerializer.Deserialize<Article>(jsonReader);
+            }
+
+            return article;
         }
     }
 }

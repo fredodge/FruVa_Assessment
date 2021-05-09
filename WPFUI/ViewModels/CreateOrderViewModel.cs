@@ -14,8 +14,10 @@ namespace WPFUI.ViewModels
     class CreateOrderViewModel : IDisposable
     {
         private Logger Log;
-        public ArticlesAPI articleAPI;
-        public RecipientAPI recipientAPI;
+        private ArticlesAPI articleAPI;
+        private RecipientAPI recipientAPI;
+        private OrdersAPI ordersAPI;
+        private OrderItemsService orderItemsService; 
 
         public CreateOrderViewModel()
         {
@@ -26,6 +28,8 @@ namespace WPFUI.ViewModels
         {
             articleAPI = new ArticlesAPI();
             recipientAPI = new RecipientAPI();
+            ordersAPI = new OrdersAPI();
+            orderItemsService = new OrderItemsService();
             Log.Log("API loaded.");
         }
         public async Task<List<Recipient>> GetRecipientsAsync()
@@ -38,26 +42,43 @@ namespace WPFUI.ViewModels
             return await articleAPI.GetArticlesAsync();
         }
 
-        public void CreateOrder(List<Articles> Articles, Recipients Recipients, string OrderName) 
+        public async Task PostOrderItemsAsync(List<OrderItem> orderItems)
         {
+            orderItems.ForEach(async oi => await orderItemsService.PostOrderItem(oi));
+        } 
+
+        public async Task<Order> CreateOrder(List<Article> Articles, Recipient Recipients, string OrderName) 
+        {
+            var Order = new Order();
+            Order.DeliveryDay = BitConverter.GetBytes(DateTime.Now.Ticks);
+            Order.OrderName = OrderName + "AtAPI";
+            Order.RecipientId = Recipients.Id;
+
+            var OrderPlaced = (await ordersAPI.PostOrder(Order));
+
+            List<OrderItem> orderItems = new List<OrderItem>();
+            foreach (var Article in Articles)
+            {
+                var OrderItem = new OrderItem();
+                OrderItem.ArticleId = Article.Id;
+                OrderItem.Amount = 1;
+                OrderItem.OrderId = OrderPlaced.Id;
+                orderItems.Add(OrderItem);
+            }
+
+            await PostOrderItemsAsync(orderItems);
+
+            Order.OrderItems = orderItems;
+            return Order;
+            // ordersAPI UPDATE
+            /*
             using (var Context = new FruVa_Assessment_OrdersEntities())
             {
                 Context.Database.Connection.Open();
 
-                var Order = new Orders();
-                Order.Id = Guid.NewGuid();
-                Order.DeliveryDay = BitConverter.GetBytes(DateTime.Now.Ticks);
-                Order.OrderName = OrderName;
-                Order.RecipientId = Recipients.Id;
-                Log.Log($"{Order.Id}");
-                var OrderPlaced = Context.Orders.Add(Order);
-                Log.Log($"{OrderPlaced.Id}");
-                Context.SaveChanges();
-
-                foreach(var Article in Articles)
+                foreach (var Article in Articles)
                 {
                     var OrderItem = new OrderItems();
-                    OrderItem.Id = Guid.NewGuid();
                     OrderItem.ArticleId = Article.Id;
                     OrderItem.Amount = 1;
                     OrderItem.OrderId = OrderPlaced.Id;
@@ -67,11 +88,12 @@ namespace WPFUI.ViewModels
                     
                 Context.Database.Connection.Close();
             }
+            */
         }
 
         public void Dispose()
         {
-            using (var context = new FruVa_Assessment_APIEntities()) { context.Dispose(); }
+            // Dispose API
         }
     }
 }

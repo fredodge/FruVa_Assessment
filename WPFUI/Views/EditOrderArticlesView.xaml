@@ -1,0 +1,53 @@
+﻿<UserControl x:Class="WPFUI.Views.EditOrderArticlesView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:local="clr-namespace:WPFUI.Views"
+             xmlns:WPFUI="clr-namespace:WPFUI"
+             mc:Ignorable="d" 
+             d:DesignHeight="450" d:DesignWidth="800">
+    <Grid>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="5*"/>
+            <ColumnDefinition Width="3*"/>
+            <ColumnDefinition Width="3*"/>
+            <ColumnDefinition Width="5*"/>
+            <ColumnDefinition Width="3*"/>
+        </Grid.ColumnDefinitions>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="1*"/>
+            <RowDefinition Height="1*"/>
+            <RowDefinition Height="3*"/>
+            <RowDefinition Height="1*"/>
+            <RowDefinition Height="3*"/>
+            <RowDefinition Height="1*"/>
+            <RowDefinition Height="1*"/>
+        </Grid.RowDefinitions>
+
+        <TextBox x:Name="searchArticlesTextBox" Grid.Column="0" Margin="8" Grid.Row="0" />
+        <Button Grid.Column="1" Grid.Row="0" Margin="8" Content="Search" Click="SearchArticles" />
+
+        <DataGrid x:Name="DatagridChooseArticleXAML" Grid.Column="0" Grid.Row="1" Margin="8" Grid.ColumnSpan="5" Grid.RowSpan="2" IsSynchronizedWithCurrentItem="True">
+            <DataGrid.Columns>
+                <DataGridTextColumn Header="Article" Binding="{Binding ArticleName}" />
+            </DataGrid.Columns>
+        </DataGrid>
+
+        <ComboBox x:Name="addArticleAmount" Grid.Column="0" Margin="8" Grid.Row="3"/>
+        <Button Grid.Column="1" Grid.Row="3" Margin="8" Content="Add" Click="AddItem" />
+        <ComboBox x:Name="removeArticleAmount" Grid.Column="3" Margin="8" Grid.Row="3"/>
+        <Button Grid.Column="4" Grid.Row="3" Margin="8" Content="Remove" Click="RemoveItem" />
+
+        <DataGrid x:Name="DatagridCartXAML" Grid.Column="0" Grid.Row="4" Margin="8" Grid.RowSpan="2" Grid.ColumnSpan="5" IsSynchronizedWithCurrentItem="True">
+            <DataGrid.Columns>
+                <DataGridTextColumn Header="ArticleName" Binding="{Binding ArticleName}" />
+                <DataGridTextColumn Header="Amount" Binding="{Binding Amount}" />
+            </DataGrid.Columns>
+        </DataGrid>
+
+        <Button Grid.Column="2" Grid.Row="6" Margin="8" Content="Cancel" Click="Abort" />
+        <Button Grid.Column="4" Grid.Row="6" Margin="8" Content="Next" Click="ContinueWithRecipientControl" />
+
+    </Grid>
+</UserControl>

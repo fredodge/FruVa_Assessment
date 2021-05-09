@@ -13,10 +13,10 @@ namespace WPFUI.Views
     public partial class EditOrderView : UserControl
     {
         EditOrderViewModel vm;
-        MainViewModel mvm;
+        OrderViewModel mvm;
         Logger Log;
         Recipient CurrentRecipient;
-        Orders OrderBeingEdited;
+        Order OrderBeingEdited;
 
         public EditOrderView()
         {
@@ -29,19 +29,14 @@ namespace WPFUI.Views
             {
                 Log = new Logger();
                 CurrentRecipient = new Recipient();
-                OrderBeingEdited = new Orders();
+                OrderBeingEdited = new Order();
                 vm = new EditOrderViewModel();
-                mvm = new MainViewModel();
+                mvm = new OrderViewModel();
                 vm.Load();
-                mvm.Load();
 
                 (await vm.GetArticlesAsync()).ForEach(article => DatagridChooseArticleXAML.Items.Add(article));
                 (await vm.GetRecipientsAsync()).ForEach(recipient => DatagridChooseRecipientsXAML.Items.Add(recipient));
-
-                foreach (var Order in mvm.Orders)
-                {
-                    DatagridChooseOrderXAML.Items.Add(Order);
-                }
+                (await vm.GetOrdersAsync()).ForEach(order => DatagridChooseOrderXAML.Items.Add(order));
             }
 
             // 	//Load your data here and assign the result to the CollectionViewSource.
@@ -54,7 +49,7 @@ namespace WPFUI.Views
             if (DatagridChooseArticleXAML.SelectedItem != null)
             {
                 DatagridCartXAML.Items.Add(DatagridChooseArticleXAML.SelectedItem);
-                Log.Log($"Added article {((Articles)DatagridChooseArticleXAML.Items.GetItemAt(DatagridChooseArticleXAML.SelectedIndex)).Id} to Cart.");
+                Log.Log($"Added article {((Article)DatagridChooseArticleXAML.Items.GetItemAt(DatagridChooseArticleXAML.SelectedIndex)).Id} to Cart.");
             }
 
             if (DatagridChooseRecipientsXAML.SelectedItem != null)
@@ -68,7 +63,7 @@ namespace WPFUI.Views
         {
             if (DatagridCartXAML.SelectedItem != null)
             {
-                string removed = $"{((Articles)DatagridCartXAML.Items.GetItemAt(DatagridCartXAML.SelectedIndex)).Id}";
+                string removed = $"{((Article)DatagridCartXAML.Items.GetItemAt(DatagridCartXAML.SelectedIndex)).Id}";
                 DatagridCartXAML.Items.Remove(DatagridCartXAML.SelectedItem);
                 Log.Log($"Removed article { removed } from Cart.");
             }
@@ -78,59 +73,39 @@ namespace WPFUI.Views
         {
             try
             {
-                List<Articles> Articles = new List<Articles>();
+                List<Article> Articles = new List<Article>();
                 foreach (var item in DatagridCartXAML.Items)
                 {
-                    Articles.Add((Articles)item);
+                    Articles.Add((Article)item);
                 }
                 vm.EditOrder(Articles, OrderBeingEdited.Id);
                 
                 DatagridChooseOrderXAML.Items.Clear();
                 DatagridCartXAML.Items.Clear();
-                
-                mvm.Load();
-                foreach (var Order in mvm.Orders)
-                {
-                    DatagridChooseOrderXAML.Items.Add(Order);
-                }
             } catch (Exception ex)
             {
                 Log.Log($"Editing Order went wrong due to: {ex.Message}");
             }
         }
 
-        private void StartEdit(object sender, RoutedEventArgs e)
+        private async void StartEdit(object sender, RoutedEventArgs e)
         {
             try
             {
                 if (DatagridChooseOrderXAML.SelectedItem != null)
                 {
-                    OrderBeingEdited = (Orders)DatagridChooseOrderXAML.Items.GetItemAt(DatagridChooseOrderXAML.SelectedIndex);
-                    List<OrderItems> OrdersOrderItems = new List<OrderItems>();
+                    OrderBeingEdited = (Order)DatagridChooseOrderXAML.Items.GetItemAt(DatagridChooseOrderXAML.SelectedIndex);
 
-                    foreach (var orderItem in mvm.OrderItems)
-                    {
-                        if (orderItem.OrderId == OrderBeingEdited.Id)
-                        {
-                            OrdersOrderItems.Add(orderItem);
-                        }
-                    }/*
-                    foreach (var recipient in (await vm.GetRecipientsAsync()))
-                    {
-                        if (OrderBeingEdited.RecipientId == recipient.Id)
-                        {
-                            CurrentRecipient = recipient;
-                        }
-                    }*/
                     currentRecipientsTextBox.Text = CurrentRecipient.Name;
 
                     DatagridCartXAML.Items.Clear();
 
-                    /*
-                    foreach (var item in OrdersOrderItems)
-                    {
-                        DatagridCartXAML.Items.Add(vm.articles_context.Find(delegate (Articles article) { return article.Id == item.ArticleId; }));
-                    }*/
+                    List<Article> orderedArticles = new List<Article>();
+                    (await vm.GetOrderItemsByOrderAsync(OrderBeingEdited)).ForEach(async orderItem => {
+                        orderedArticles.Add(await vm.GetArticleByIdAsync(orderItem.ArticleId));
+                    });
+                    Log.Log($"{orderedArticles.Count}");
+                    orderedArticles.ForEach(article => DatagridCartXAML.Items.Add(article));
                 }
             } catch (Exception ex)
             {

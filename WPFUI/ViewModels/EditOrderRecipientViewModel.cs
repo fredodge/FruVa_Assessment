@@ -12,33 +12,36 @@ using System.Collections.ObjectModel;
 
 namespace WPFUI.ViewModels
 {
-    class EditOrderViewModel : IDisposable
+    class EditOrderRecipientViewModel : IDisposable
     {
         private Logger Log;
-        private ArticlesAPI articleAPI;
         private RecipientAPI recipientAPI;
         private OrdersAPI ordersAPI;
-        private OrderItemsService orderItemsService;
-        private Order orderEditObject;
+        private Order order;
+        private List<OrderItem> orderItems;
 
-        public EditOrderViewModel()
+        public EditOrderRecipientViewModel()
         {
             Log = new Logger();
         }
 
-        public EditOrderViewModel(Order order)
+        public EditOrderRecipientViewModel(Order order)
         {
             Log = new Logger();
-            orderEditObject = order;
-            Log.Log($"{orderEditObject.OrderName}");
+            this.order = order;
+        }
+
+        public EditOrderRecipientViewModel(Order order, List<OrderItem> orderItems)
+        {
+            Log = new Logger();
+            this.order = order;
+            this.orderItems = orderItems;
         }
 
         public void Load()
         {
-            articleAPI = new ArticlesAPI();
             recipientAPI = new RecipientAPI();
             ordersAPI = new OrdersAPI();
-            orderItemsService = new OrderItemsService();
             Log.Log("API loaded.");
         }
 
@@ -47,24 +50,9 @@ namespace WPFUI.ViewModels
             return await recipientAPI.GetRecipientsAsync();
         }
 
-        public async Task<List<Article>> GetArticlesAsync()
-        {
-            return await articleAPI.GetArticlesAsync();
-        }
-
-        public async Task<Article> GetArticleByIdAsync(Guid id)
-        {
-            return await articleAPI.GetArticleByIdAsync(id);
-        }
-
         public async Task<List<Order>> GetOrdersAsync()
         {
             return await ordersAPI.GetOrdersAsync();
-        }
-
-        public async Task<List<OrderItem>> GetOrderItemsByOrderAsync(Order order)
-        {
-            return await orderItemsService.GetOrderItemsByOrderAsync(order.Id);
         }
 
         public void EditOrder(List<Article> Articles, Guid OrderId)

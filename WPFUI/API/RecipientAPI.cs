@@ -13,8 +13,8 @@ namespace WPFUI.API
     class RecipientAPI
     {
         private const string URL = "http://localhost:8080/api/";
-        static HttpClient client = new HttpClient();
-        static JsonSerializer jsonSerializer = new JsonSerializer();
+        HttpClient client = new HttpClient();
+        JsonSerializer jsonSerializer = new JsonSerializer();
 
         public RecipientAPI()
         {

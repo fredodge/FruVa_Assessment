@@ -23,28 +23,23 @@ namespace WPFUI
     /// </summary>
     public partial class MainWindow : Window
     {
-        Logger Log;
-        
         public MainWindow()
         {
-            Log = new Logger();
-
             InitializeComponent();
-            Log.Log($"MainWindow initialised.");
+            DataContext = new OrderViewModel();
         }
 
         private void CreateOrder(object sender, RoutedEventArgs e)
         {
             DataContext = new CreateOrderViewModel();
         }
-        private void EditOrder(object sender, RoutedEventArgs e)
+        public void EditOrder(object sender, RoutedEventArgs e)
         {
             DataContext = new EditOrderViewModel();
         }
-        private void MainView(object sender, RoutedEventArgs e)
+        public void MainView(object sender, RoutedEventArgs e)
         {
-            DataContext = new MainViewModel();
+            DataContext = new OrderViewModel();
         }
-
     }
 }

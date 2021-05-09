@@ -13,6 +13,7 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
+using WPFUI.Models;
 using WPFUI.ViewModels;
 
 namespace WPFUI.Views
@@ -24,14 +25,14 @@ namespace WPFUI.Views
     {
         CreateOrderViewModel vm;
         Logger Log;
-        Recipients CurrentRecipient;
+        Recipient CurrentRecipient;
         string OrderName = "Order";
 
         public CreateOrderView()
         {
             Log = new Logger();
             InitializeComponent();
-            CurrentRecipient = new Recipients();
+            CurrentRecipient = new Recipient();
         }
 
         private async void UserControl_Loaded(object sender, RoutedEventArgs e)
@@ -56,13 +57,13 @@ namespace WPFUI.Views
             if (DatagridChooseArticleXAML.SelectedItem != null)
             {
                 DatagridCartXAML.Items.Add(DatagridChooseArticleXAML.SelectedItem);
-                Log.Log($"Added Article {((Articles) DatagridChooseArticleXAML.Items.GetItemAt(DatagridChooseArticleXAML.SelectedIndex)).Id} to Cart.");
+                Log.Log($"Added Article {((Article) DatagridChooseArticleXAML.Items.GetItemAt(DatagridChooseArticleXAML.SelectedIndex)).Id} to Cart.");
             }
 
             if (DatagridChooseRecipientsXAML.SelectedItem != null)
             {
-                CurrentRecipient = ((Recipients)DatagridChooseRecipientsXAML.Items.GetItemAt(DatagridChooseRecipientsXAML.SelectedIndex));
-                Log.Log($"Made Recipient {((Articles)DatagridChooseArticleXAML.Items.GetItemAt(DatagridChooseArticleXAML.SelectedIndex)).Id} to Recipient of the Order.");
+                CurrentRecipient = ((Recipient)DatagridChooseRecipientsXAML.Items.GetItemAt(DatagridChooseRecipientsXAML.SelectedIndex));
+                Log.Log($"Made Recipient {((Recipient)DatagridChooseRecipientsXAML.Items.GetItemAt(DatagridChooseRecipientsXAML.SelectedIndex)).Id} to Recipient of the Order.");
                 recipientNameTextBox.Text = CurrentRecipient.Name;
             }
         }
@@ -71,57 +72,55 @@ namespace WPFUI.Views
         {
             if (DatagridCartXAML.SelectedItem != null)
             {
-                string removed = $"Removed: {((Articles)DatagridCartXAML.Items.GetItemAt(DatagridCartXAML.SelectedIndex)).Id}";
+                string removed = $"Removed: {((Article)DatagridCartXAML.Items.GetItemAt(DatagridCartXAML.SelectedIndex)).Id}";
                 DatagridCartXAML.Items.Remove(DatagridCartXAML.SelectedItem);
                 Log.Log($"Removed Article { removed } from Cart.");
             }
         }
 
-        private void CreateOrder(object sender, RoutedEventArgs e)
+        private async void CreateOrder(object sender, RoutedEventArgs e)
         {
             try {
-                List<Articles> Articles = new List<Articles>();
+                List<Article> Articles = new List<Article>();
                 foreach(var item in DatagridCartXAML.Items)
                 {
-                    Articles.Add((Articles)item);
+                    Articles.Add((Article)item);
                 }
-                vm.CreateOrder(Articles, CurrentRecipient, OrderName);
+                Application.Current.MainWindow.DataContext = new EditOrderViewModel(await vm.CreateOrder(Articles, CurrentRecipient, OrderName));
             } catch (Exception ex)
             {
                 Log.Log($"Create Order went wrong due to: {ex.Message}");
             }
         }
 
-        private void SearchArticle(object sender, RoutedEventArgs e)
+        private async void SearchArticle(object sender, RoutedEventArgs e)
         {
             DatagridChooseArticleXAML.Items.Clear();
             try
             {
-        /*        foreach (var article in vm.articles_context)
-                {
+
+                (await vm.GetArticlesAsync()).ForEach(article => {
                     if (article.SearchQuery.Contains(searchArticlesTextBox.Text))
-                    {
                         DatagridChooseArticleXAML.Items.Add(article);
-                    }
-                }*/
+                });
+
             } catch(WarningException ex)
             {
                 Log.Log($"Search Articles went wrong due to: {ex.Message}");
             }
         }
 
-        private void SearchRecipient(object sender, RoutedEventArgs e)
+        private async void SearchRecipient(object sender, RoutedEventArgs e)
         {
             DatagridChooseRecipientsXAML.Items.Clear();
             try
-            {/*
-                foreach (var recipient in vm.recipients)
-                {
+            {
+
+                (await vm.GetRecipientsAsync()).ForEach(recipient => {
                     if (recipient.Name.Contains(searchRecipientsTextBox.Text))
-                    {
                         DatagridChooseRecipientsXAML.Items.Add(recipient);
-                    }
-                }*/
+                });
+
             }
             catch (WarningException ex)
             {

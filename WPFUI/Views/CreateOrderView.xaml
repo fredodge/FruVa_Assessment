@@ -5,12 +5,9 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              xmlns:local="clr-namespace:WPFUI.Views"
              xmlns:WPFUI="clr-namespace:WPFUI" x:Class="WPFUI.Views.CreateOrderView"
+             xmlns:views="clr-namespace:WPFUI.Views" xmlns:viewmodels="clr-namespace:WPFUI.ViewModels"
              mc:Ignorable="d" 
              d:DesignHeight="520" d:DesignWidth="700" Loaded="UserControl_Loaded">
-    <UserControl.Resources>
-        <CollectionViewSource x:Key="ordersViewSource" d:DesignSource="{d:DesignInstance {x:Type WPFUI:Orders}, CreateList=True}"/>
-        <CollectionViewSource x:Key="recipientsViewSource" d:DesignSource="{d:DesignInstance {x:Type WPFUI:Recipients}, CreateList=True}"/>
-    </UserControl.Resources>
     <Grid>
         <Grid x:Name="grid1" HorizontalAlignment="Left" Margin="0" VerticalAlignment="Top" Width="700" Height="520">
             <Grid.ColumnDefinitions>
@@ -76,25 +73,6 @@
             <Calendar x:Name="deliveryDayCalendar" Grid.Column="1" Grid.ColumnSpan="2" Grid.RowSpan="3"
                       DisplayDate="{Binding SelectedDate, RelativeSource={RelativeSource Self}}"
                       HorizontalAlignment="center" Grid.Row="1" SelectedDate="{Binding DeliveryDay, Mode=TwoWay, NotifyOnValidationError=true, ValidatesOnExceptions=true}" VerticalAlignment="Center"/>
-            <Grid x:Name="grid2" Grid.Column="4" DataContext="{StaticResource ordersViewSource}" HorizontalAlignment="Left" Margin="58,32,0,0" Grid.Row="2" VerticalAlignment="Top">
-                <Grid.ColumnDefinitions>
-                    <ColumnDefinition Width="Auto"/>
-                    <ColumnDefinition Width="Auto"/>
-                </Grid.ColumnDefinitions>
-                <Grid.RowDefinitions>
-                    <RowDefinition Height="Auto"/>
-                </Grid.RowDefinitions>
-            </Grid>
-            <Grid x:Name="grid3" Grid.Column="5" DataContext="{StaticResource recipientsViewSource}" HorizontalAlignment="Left" Margin="59,11,0,0" Grid.Row="4" VerticalAlignment="Top">
-                <Grid.ColumnDefinitions>
-                    <ColumnDefinition Width="Auto"/>
-                    <ColumnDefinition Width="Auto"/>
-                </Grid.ColumnDefinitions>
-                <Grid.RowDefinitions>
-                    <RowDefinition Height="Auto"/>
-                </Grid.RowDefinitions>
-            </Grid>
-
 
         </Grid>
     </Grid>
