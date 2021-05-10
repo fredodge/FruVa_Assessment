@@ -30,7 +30,13 @@
 
         <DataGrid x:Name="DatagridChooseArticleXAML" Grid.Column="0" Grid.Row="1" Margin="8" Grid.ColumnSpan="5" Grid.RowSpan="2" IsSynchronizedWithCurrentItem="True">
             <DataGrid.Columns>
-                <DataGridTextColumn Header="Article" Binding="{Binding ArticleName}" />
+                <DataGridTextColumn Header="Name" Binding="{Binding ArticleName}" />
+                <DataGridTextColumn Header="Group" Binding="{Binding ArticleGroupName}" />
+                <DataGridTextColumn Header="Group No." Binding="{Binding ArticleGroupNumber}" />
+                <DataGridTextColumn Header="Package Size" Binding="{Binding PackageSize}" />
+                <DataGridTextColumn Header="Origin" Binding="{Binding OriginCountry}" />
+                <DataGridTextColumn Header="Trade Class" Binding="{Binding TradeClass}" />
+                <DataGridTextColumn Header="Fruit Size" Binding="{Binding Calliber}" />
             </DataGrid.Columns>
         </DataGrid>
 
@@ -41,7 +47,13 @@
 
         <DataGrid x:Name="DatagridCartXAML" Grid.Column="0" Grid.Row="4" Margin="8" Grid.RowSpan="2" Grid.ColumnSpan="5" IsSynchronizedWithCurrentItem="True">
             <DataGrid.Columns>
-                <DataGridTextColumn Header="ArticleName" Binding="{Binding ArticleName}" />
+                <DataGridTextColumn Header="Name" Binding="{Binding ArticleName}" />
+                <DataGridTextColumn Header="Group" Binding="{Binding ArticleGroupName}" />
+                <DataGridTextColumn Header="Group No." Binding="{Binding ArticleGroupNumber}" />
+                <DataGridTextColumn Header="Package Size" Binding="{Binding PackageSize}" />
+                <DataGridTextColumn Header="Origin" Binding="{Binding OriginCountry}" />
+                <DataGridTextColumn Header="Trade Class" Binding="{Binding TradeClass}" />
+                <DataGridTextColumn Header="Fruit Size" Binding="{Binding Calliber}" />
                 <DataGridTextColumn Header="Amount" Binding="{Binding Amount}" />
             </DataGrid.Columns>
         </DataGrid>

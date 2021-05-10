@@ -33,7 +33,12 @@
 
         <DataGrid x:Name="DatagridXAML" Grid.Column="0" Grid.Row="1" Margin="8" Grid.ColumnSpan="3" IsSynchronizedWithCurrentItem="True">
             <DataGrid.Columns>
-                <DataGridTextColumn Header="Order" Binding="{Binding OrderName}" Width="150"/>
+                <DataGridTextColumn Header="Name" Binding="{Binding OrderName}"/>
+                <DataGridTextColumn Header="Id" Binding="{Binding Id}"/>
+                <DataGridTextColumn Header="Recipient" Binding="{Binding RecipientName}"/>
+                <DataGridTextColumn Header="Delivery Day" Binding="{Binding DeliveryDay}"/>
+                <DataGridTextColumn Header="Article Amount" Binding="{Binding ArticleAmount}"/>
+                <DataGridTextColumn Header="Articles" Binding="{Binding ArticleNames}"/>
             </DataGrid.Columns>
         </DataGrid>
 

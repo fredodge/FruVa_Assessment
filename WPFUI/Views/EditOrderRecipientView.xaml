@@ -24,7 +24,12 @@
 
         <DataGrid x:Name="DatagridChooseRecipientsXAML" Grid.Column="0" Grid.Row="1" Margin="8" Grid.ColumnSpan="4" IsSynchronizedWithCurrentItem="True">
             <DataGrid.Columns>
-                <DataGridTextColumn Header="Recipient" Binding="{Binding Name}" />
+                <DataGridTextColumn Header="Name" Binding="{Binding Name}" />
+                <DataGridTextColumn Header="Country" Binding="{Binding Country}" />
+                <DataGridTextColumn Header="City" Binding="{Binding City}" />
+                <DataGridTextColumn Header="Street" Binding="{Binding Street}" />
+                <DataGridTextColumn Header="StreetNumber" Binding="{Binding StreetNumber}" />
+                <DataGridTextColumn Header="PostCode" Binding="{Binding PostCode}" />
             </DataGrid.Columns>
         </DataGrid>
 

@@ -130,6 +130,7 @@
     <Compile Include="Models\ArticleOrderItem.cs" />
     <Compile Include="Models\Order.cs" />
     <Compile Include="Models\OrderItem.cs" />
+    <Compile Include="Models\OrderViewItem.cs" />
     <Compile Include="Models\Recipient.cs" />
     <Compile Include="ViewModels\CreateOrderViewModel.cs" />
     <Compile Include="Helper\Logger.cs" />
