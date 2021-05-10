@@ -63,6 +63,7 @@
     <Reference Include="Microsoft.Net.Http.Headers, Version=2.2.0.0, Culture=neutral, PublicKeyToken=adb9793829ddae60, processorArchitecture=MSIL">
       <HintPath>..\packages\Microsoft.Net.Http.Headers.2.2.0\lib\netstandard2.0\Microsoft.Net.Http.Headers.dll</HintPath>
     </Reference>
+    <Reference Include="Microsoft.VisualBasic" />
     <Reference Include="Newtonsoft.Json, Version=13.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
       <HintPath>..\packages\Newtonsoft.Json.13.0.1\lib\net45\Newtonsoft.Json.dll</HintPath>
     </Reference>
@@ -125,6 +126,9 @@
     <Compile Include="API\OrderItemService.cs" />
     <Compile Include="API\OrderService.cs" />
     <Compile Include="API\RecipientService.cs" />
+    <Compile Include="Helper\CSVExporter.cs" />
+    <Compile Include="Helper\DatagridExtensions.cs" />
+    <Compile Include="Helper\IExporter.cs" />
     <Compile Include="Models\Article.cs" />
     <Compile Include="Models\ArticleOrderItem.cs" />
     <Compile Include="Models\Order.cs" />

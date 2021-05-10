@@ -1,8 +1,13 @@
-﻿using System;
+﻿using Microsoft.VisualBasic;
+using Microsoft.Win32;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel;
+using System.IO;
+using System.Text;
 using System.Windows;
 using System.Windows.Controls;
+using WPFUI.Helper;
 using WPFUI.Models;
 using WPFUI.ViewModels;
 
@@ -45,7 +50,6 @@ namespace WPFUI.Views
                     vm.orderviewItems.Add(newItem);
                     DatagridXAML.Items.Add(newItem);
                 });
-                
             }
         }
         public Order GetSelectedOrder()
@@ -64,8 +68,25 @@ namespace WPFUI.Views
                     OrderViewItem SelectedOrder = (OrderViewItem)DatagridXAML.Items.GetItemAt(DatagridXAML.SelectedIndex);
                     if (await vm.DeleteOrder(SelectedOrder.Id))
                     {
+                        (await vm.GetOrdersAsync()).ForEach(async order => {
+                            var newItem = new OrderViewItem();
+                            newItem.Id = order.Id;
+                            newItem.OrderName = order.OrderName;
+                            newItem.RecipientName = (await vm.GetRecipientByIdAsync(order.RecipientId)).Name;
+                            newItem.ArticleAmount = 0;
+                            newItem.ArticleNames = "";
+                            // newItem.DeliveryDay = order.DeliveryDay;
+
+                            (await vm.orderItemsService.GetOrderItemsByOrderAsync(order.Id)).ForEach(async oi =>
+                            {
+                                newItem.ArticleAmount += oi.Amount;
+                                newItem.ArticleNames += $"{(await vm.GetArticleByIdAsync(oi.ArticleId)).ArticleName}, ";
+                            });
+
+                            vm.orderviewItems.Add(newItem);
+                        });
                         DatagridXAML.Items.Clear();
-                        (await vm.GetOrdersAsync()).ForEach(order => DatagridXAML.Items.Add(order));
+                        DatagridXAML.ItemsSource = vm.orderviewItems;
                     } else
                     {
                         throw new Exception("Deletion failed.");
@@ -106,6 +127,15 @@ namespace WPFUI.Views
                 var ovi = (OrderViewItem)DatagridXAML.Items.GetItemAt(DatagridXAML.SelectedIndex);
                 Application.Current.MainWindow.DataContext = new EditOrderArticlesViewModel(await vm.ordersAPI.GetOrderByIdAsync(ovi.Id), await vm.orderItemsService.GetOrderItemsByOrderAsync(ovi.Id));
             }
+        }
+
+        private void Export_CSV(object sender, RoutedEventArgs e)
+        {
+            DatagridXAML.Items.Clear();
+            DatagridXAML.ItemsSource = vm.orderviewItems;
+            const string path = "export.csv";
+            IExporter csvExporter = new CSVExporter(';');
+            DatagridXAML.ExportUsingRefection(csvExporter, path);
         }
     }
 }
