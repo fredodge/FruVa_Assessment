@@ -33,7 +33,7 @@
         <Button Grid.Column="3" Grid.Row="3" Content="Finish" Margin="8" Click="Finish"/>
 
         <Label Margin="8" Content="Delivery Date" Grid.Column="2" VerticalAlignment="Center" Grid.Row="1"/>
-        <DatePicker Grid.Column="3" Grid.Row="1" Margin="8" />
+        <DatePicker x:Name="datepickerDeliveryDay" Grid.Column="3" Grid.Row="1" Margin="8" />
 
     </Grid>
 </UserControl>

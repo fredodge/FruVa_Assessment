@@ -34,11 +34,8 @@ namespace WPFUI.Views
                     newItem.RecipientName = (await vm.GetRecipientByIdAsync(order.RecipientId)).Name;
                     newItem.ArticleAmount = 0;
                     newItem.ArticleNames = "";
+                    // newItem.DeliveryDay = order.DeliveryDay;
 
-                    /*
-                    long longVar = BitConverter.ToInt64(order.DeliveryDay, 0);
-                    newItem.DeliveryDay = new DateTime(1980, 1, 1).AddMilliseconds(longVar);
-                    */
                     (await vm.orderItemsService.GetOrderItemsByOrderAsync(order.Id)).ForEach(async oi =>
                     {
                         newItem.ArticleAmount += oi.Amount;
@@ -102,9 +99,13 @@ namespace WPFUI.Views
             Application.Current.MainWindow.DataContext = new EditOrderArticlesViewModel();
         }
 
-        private void EditOrder(object sender, RoutedEventArgs e)
+        private async void EditOrder(object sender, RoutedEventArgs e)
         {
-            Application.Current.MainWindow.DataContext = new EditOrderArticlesViewModel();
+            if (DatagridXAML.SelectedItem != null)
+            {
+                var ovi = (OrderViewItem)DatagridXAML.Items.GetItemAt(DatagridXAML.SelectedIndex);
+                Application.Current.MainWindow.DataContext = new EditOrderArticlesViewModel(await vm.ordersAPI.GetOrderByIdAsync(ovi.Id), await vm.orderItemsService.GetOrderItemsByOrderAsync(ovi.Id));
+            }
         }
     }
 }

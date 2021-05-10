@@ -8,11 +8,6 @@
              xmlns:views="clr-namespace:WPFUI.Views"
              mc:Ignorable="d" 
              d:DesignHeight="520" d:DesignWidth="500">
-    <UserControl.Resources>
-        <DataTemplate x:Name="CreateOrderViewTemplate" DataType="{x:Type viewmodels:CreateOrderViewModel}">
-            <views:CreateOrderView DataContext="{Binding}"/>
-        </DataTemplate>
-    </UserControl.Resources>
     <Grid>
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="7*"/>

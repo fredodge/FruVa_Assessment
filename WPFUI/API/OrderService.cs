@@ -45,6 +45,27 @@ namespace WPFUI.API
             return orders;
         }
 
+        [HttpGet]
+        public async Task<Order> GetOrderByIdAsync(Guid orderId)
+        {
+            Order order = null;
+            HttpResponseMessage response = await client.GetAsync($"Orders/{orderId}");
+
+            response.EnsureSuccessStatusCode();
+
+            if (response.Content is object && response.Content.Headers.ContentType.MediaType == "application/json")
+            {
+                var contentStream = response.Content.ReadAsStreamAsync().Result;
+
+                var streamReader = new StreamReader(contentStream);
+                var jsonReader = new JsonTextReader(streamReader);
+
+                order = jsonSerializer.Deserialize<Order>(jsonReader);
+            }
+
+            return order;
+        }
+
         [HttpPost]
         public async Task<Order> PostOrder(Order order)
         {
@@ -55,6 +76,33 @@ namespace WPFUI.API
             byteContent.Headers.ContentType = new MediaTypeHeaderValue("application/json");
 
             HttpResponseMessage response = await client.PostAsync("Orders", byteContent);
+
+            response.EnsureSuccessStatusCode();
+
+            var returnedOrder = new Order();
+            if (response.Content is object && response.Content.Headers.ContentType.MediaType == "application/json")
+            {
+                var contentStream = response.Content.ReadAsStreamAsync().Result;
+
+                var streamReader = new StreamReader(contentStream);
+                var jsonReader = new JsonTextReader(streamReader);
+
+                returnedOrder = jsonSerializer.Deserialize<Order>(jsonReader);
+            }
+
+            return returnedOrder;
+        }
+
+        [HttpPut]
+        public async Task<Order> PutOrder(Order order)
+        {
+            var orderJson = JsonConvert.SerializeObject(order);
+            var buffer = System.Text.Encoding.UTF8.GetBytes(orderJson);
+
+            var byteContent = new ByteArrayContent(buffer);
+            byteContent.Headers.ContentType = new MediaTypeHeaderValue("application/json");
+
+            HttpResponseMessage response = await client.PutAsync("Orders", byteContent);
 
             response.EnsureSuccessStatusCode();
 

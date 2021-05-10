@@ -125,31 +125,22 @@
     <Compile Include="API\OrderItemService.cs" />
     <Compile Include="API\OrderService.cs" />
     <Compile Include="API\RecipientService.cs" />
-    <Compile Include="Helper\OrderHelper.cs" />
     <Compile Include="Models\Article.cs" />
     <Compile Include="Models\ArticleOrderItem.cs" />
     <Compile Include="Models\Order.cs" />
     <Compile Include="Models\OrderItem.cs" />
     <Compile Include="Models\OrderViewItem.cs" />
     <Compile Include="Models\Recipient.cs" />
-    <Compile Include="ViewModels\CreateOrderViewModel.cs" />
     <Compile Include="Helper\Logger.cs" />
     <Compile Include="ViewModels\EditOrderArticlesViewModel.cs" />
     <Compile Include="ViewModels\EditOrderRecipientViewModel.cs" />
-    <Compile Include="ViewModels\EditOrderViewModel.cs" />
     <Compile Include="ViewModels\OrderViewModel.cs" />
     <Compile Include="ViewModels\SummaryViewModel.cs" />
-    <Compile Include="Views\CreateOrderView.xaml.cs">
-      <DependentUpon>CreateOrderView.xaml</DependentUpon>
-    </Compile>
     <Compile Include="Views\EditOrderArticlesView.xaml.cs">
       <DependentUpon>EditOrderArticlesView.xaml</DependentUpon>
     </Compile>
     <Compile Include="Views\EditOrderRecipientView.xaml.cs">
       <DependentUpon>EditOrderRecipientView.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="Views\EditOrderView.xaml.cs">
-      <DependentUpon>EditOrderView.xaml</DependentUpon>
     </Compile>
     <Compile Include="Views\OrderView.xaml.cs">
       <DependentUpon>OrderView.xaml</DependentUpon>
@@ -169,19 +160,11 @@
       <DependentUpon>MainWindow.xaml</DependentUpon>
       <SubType>Code</SubType>
     </Compile>
-    <Page Include="Views\CreateOrderView.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
     <Page Include="Views\EditOrderArticlesView.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="Views\EditOrderRecipientView.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
-    <Page Include="Views\EditOrderView.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

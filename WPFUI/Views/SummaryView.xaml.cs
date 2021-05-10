@@ -57,9 +57,46 @@ namespace WPFUI.Views
             Application.Current.MainWindow.DataContext = new EditOrderRecipientViewModel(vm.order, vm.orderItems);
         }
 
-        private void Finish(object sender, RoutedEventArgs e)
+        private async void Finish(object sender, RoutedEventArgs e)
         {
+            Order order = new Order();
+            try
+            {
+                order = await vm.ordersService.GetOrderByIdAsync(vm.order.Id);
+            }
+            catch (Exception ex) {
+                Log.Log($"Order not created now ({ex})");
+                // no order available
+            }
 
+            if (!order.Id.Equals(Guid.Empty))
+            {
+                (await vm.orderItemsService.GetOrderItemsByOrderAsync(order.Id)).ForEach(async oi => await vm.orderItemsService.DeleteOrderItem(oi.Id));
+                vm.order.DeliveryDay = datepickerDeliveryDay.SelectedDate.HasValue ? BitConverter.GetBytes(datepickerDeliveryDay.SelectedDate.Value.ToBinary()) : BitConverter.GetBytes(DateTime.Now.ToBinary());
+                vm.order.OrderName = "Name";
+
+                order = await vm.ordersService.PutOrder(vm.order);
+                vm.orderItems.ForEach(async oi => {
+                    oi.OrderId = order.Id;
+                    oi.Id = Guid.NewGuid();
+                    await vm.orderItemsService.PostOrderItem(oi);
+                });
+            } else
+            {
+                vm.order.Id = Guid.NewGuid();
+                vm.order.OrderName = "Name";
+                vm.order.DeliveryDay = datepickerDeliveryDay.SelectedDate.HasValue ? BitConverter.GetBytes(datepickerDeliveryDay.SelectedDate.Value.ToBinary()) : BitConverter.GetBytes(DateTime.Now.ToBinary());
+
+                order = await vm.ordersService.PostOrder(vm.order);
+                vm.orderItems.ForEach(async oi => {
+                    oi.OrderId = order.Id;
+                    oi.Id = Guid.NewGuid();
+                    await vm.orderItemsService.PostOrderItem(oi);
+                });
+            }
+
+
+            Application.Current.MainWindow.DataContext = new OrderViewModel();
         }
 
         private void CSV_Export(object sender, RoutedEventArgs e)
