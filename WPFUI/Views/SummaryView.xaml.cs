@@ -40,15 +40,21 @@ namespace WPFUI.Views
                 Log = new Logger();
                 vm = (SummaryViewModel)Application.Current.MainWindow.DataContext;
                 vm.Load();
-                
-                List<ArticleOrderItem> articleOrderList = new List<ArticleOrderItem>();
-                vm.orderItems.ForEach(async orderItem => articleOrderList.Add(CreateArticleOrderItem(await vm.GetArticleByIdAsync(orderItem.ArticleId), orderItem)));
-                articleOrderList.ForEach(ao => listBoxArticles.Items.Add($"{ao.Amount} of {ao.ArticleName} in size {ao.PackageSize} coming from {ao.OriginCountry}"));
 
-                labelRecipientName.Content = (await vm.GetRecipientByIdAsync(vm.order.RecipientId)).Name;
-                int articleAmount = 0;
-                vm.orderItems.ForEach(oi => articleAmount += oi.Amount);
-                labelArticleCount.Content = articleAmount;
+                try
+                {
+                    List<ArticleOrderItem> articleOrderList = new List<ArticleOrderItem>();
+                    vm.orderItems.ForEach(async orderItem => articleOrderList.Add(CreateArticleOrderItem(await vm.GetArticleByIdAsync(orderItem.ArticleId), orderItem)));
+                    articleOrderList.ForEach(ao => listBoxArticles.Items.Add($"{ao.Amount} of {ao.ArticleName} in size {ao.PackageSize} coming from {ao.OriginCountry}"));
+
+                    labelRecipientName.Content = (await vm.GetRecipientByIdAsync(vm.order.RecipientId)).Name;
+                    int articleAmount = 0;
+                    vm.orderItems.ForEach(oi => articleAmount += oi.Amount);
+                    labelArticleCount.Content = articleAmount;
+                } catch (Exception ep)
+                {
+                    Log.Log($"Something went wrong while loading data due to: {ep.Message}");
+                }
             }
         }
 
@@ -64,44 +70,47 @@ namespace WPFUI.Views
             {
                 order = await vm.ordersService.GetOrderByIdAsync(vm.order.Id);
             }
-            catch (Exception ex) {
-                Log.Log($"Order not created now ({ex})");
-                // no order available
+            catch (Exception ep) {
+                Log.Log($"A new Order will be created ({ep.Message})");
             }
 
-            if (!order.Id.Equals(Guid.Empty))
+            try
             {
-                (await vm.orderItemsService.GetOrderItemsByOrderAsync(order.Id)).ForEach(async oi => await vm.orderItemsService.DeleteOrderItem(oi.Id));
-                vm.order.DeliveryDay = datepickerDeliveryDay.SelectedDate.HasValue ? BitConverter.GetBytes(datepickerDeliveryDay.SelectedDate.Value.ToBinary()) : BitConverter.GetBytes(DateTime.Now.ToBinary());
-                vm.order.OrderName = "Name";
+                if (!order.Id.Equals(Guid.Empty))
+                {
+                    (await vm.orderItemsService.GetOrderItemsByOrderAsync(order.Id)).ForEach(async oi => await vm.orderItemsService.DeleteOrderItem(oi.Id));
+                    vm.order.DeliveryDay = datepickerDeliveryDay.SelectedDate.HasValue ? BitConverter.GetBytes(datepickerDeliveryDay.SelectedDate.Value.ToBinary()) : BitConverter.GetBytes(DateTime.Now.ToBinary());
+                    vm.order.OrderName = "Name";
 
-                order = await vm.ordersService.PutOrder(vm.order);
-                vm.orderItems.ForEach(async oi => {
-                    oi.OrderId = order.Id;
-                    oi.Id = Guid.NewGuid();
-                    await vm.orderItemsService.PostOrderItem(oi);
-                });
-            } else
-            {
-                vm.order.Id = Guid.NewGuid();
-                vm.order.OrderName = "Name";
-                vm.order.DeliveryDay = datepickerDeliveryDay.SelectedDate.HasValue ? BitConverter.GetBytes(datepickerDeliveryDay.SelectedDate.Value.ToBinary()) : BitConverter.GetBytes(DateTime.Now.ToBinary());
+                    order = await vm.ordersService.PutOrder(vm.order);
+                    vm.orderItems.ForEach(async oi =>
+                    {
+                        oi.OrderId = order.Id;
+                        oi.Id = Guid.NewGuid();
+                        await vm.orderItemsService.PostOrderItem(oi);
+                    });
+                }
+                else
+                {
+                    vm.order.Id = Guid.NewGuid();
+                    vm.order.OrderName = "Name";
+                    vm.order.DeliveryDay = datepickerDeliveryDay.SelectedDate.HasValue ? BitConverter.GetBytes(datepickerDeliveryDay.SelectedDate.Value.ToBinary()) : BitConverter.GetBytes(DateTime.Now.ToBinary());
 
-                order = await vm.ordersService.PostOrder(vm.order);
-                vm.orderItems.ForEach(async oi => {
-                    oi.OrderId = order.Id;
-                    oi.Id = Guid.NewGuid();
-                    await vm.orderItemsService.PostOrderItem(oi);
-                });
+                    order = await vm.ordersService.PostOrder(vm.order);
+                    vm.orderItems.ForEach(async oi =>
+                    {
+                        oi.OrderId = order.Id;
+                        oi.Id = Guid.NewGuid();
+                        await vm.orderItemsService.PostOrderItem(oi);
+                    });
+                }
             }
-
+            catch (Exception ep)
+            {
+                Log.Log($"Editing/Creating Order went wrong due to: ({ep.Message})");
+            }
 
             Application.Current.MainWindow.DataContext = new OrderViewModel();
-        }
-
-        private void CSV_Export(object sender, RoutedEventArgs e)
-        {
-
         }
 
         private ArticleOrderItem CreateArticleOrderItem(Article article, OrderItem orderItem)

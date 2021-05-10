@@ -1,18 +1,7 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.ComponentModel;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
-using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
-using System.Windows.Shapes;
 using WPFUI.Models;
 using WPFUI.ViewModels;
 
@@ -41,11 +30,17 @@ namespace WPFUI.Views
                 vm = (EditOrderRecipientViewModel) Application.Current.MainWindow.DataContext;
                 vm.Load();
 
-                if (!vm.order.RecipientId.Equals(Guid.Empty))
+                try
                 {
-                    labelRecipientName.Content = (await vm.GetRecipientByIdAsync(vm.order.RecipientId)).Name;
+                    if (!vm.order.RecipientId.Equals(Guid.Empty))
+                    {
+                        labelRecipientName.Content = (await vm.GetRecipientByIdAsync(vm.order.RecipientId)).Name;
+                    }
+                    (await vm.GetRecipientsAsync()).ForEach(recipient => DatagridChooseRecipientsXAML.Items.Add(recipient));
+                } catch (Exception ep)
+                {
+                    Log.Log($"Something went wrong while loading data due to: {ep}");
                 }
-                (await vm.GetRecipientsAsync()).ForEach(recipient => DatagridChooseRecipientsXAML.Items.Add(recipient));
             }
         }
 
@@ -60,9 +55,9 @@ namespace WPFUI.Views
                         DatagridChooseRecipientsXAML.Items.Add(recipient);
                 });
             }
-            catch (WarningException ex)
+            catch (WarningException ep)
             {
-                Log.Log($"Search Articles went wrong due to: {ex.Message}");
+                Log.Log($"Search Articles went wrong due to: {ep.Message}");
             }
         }
 

@@ -1,10 +1,6 @@
-﻿using Microsoft.VisualBasic;
-using Microsoft.Win32;
-using System;
-using System.Collections.Generic;
+﻿using System;
 using System.ComponentModel;
-using System.IO;
-using System.Text;
+using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
 using WPFUI.Helper;
@@ -31,25 +27,7 @@ namespace WPFUI.Views
             {
                 Log = new Logger();
                 vm = new OrderViewModel();
-
-                (await vm.GetOrdersAsync()).ForEach(async order => {
-                    var newItem = new OrderViewItem();
-                    newItem.Id = order.Id;
-                    newItem.OrderName = order.OrderName;
-                    newItem.RecipientName = (await vm.GetRecipientByIdAsync(order.RecipientId)).Name;
-                    newItem.ArticleAmount = 0;
-                    newItem.ArticleNames = "";
-                    // newItem.DeliveryDay = order.DeliveryDay;
-
-                    (await vm.orderItemsService.GetOrderItemsByOrderAsync(order.Id)).ForEach(async oi =>
-                    {
-                        newItem.ArticleAmount += oi.Amount;
-                        newItem.ArticleNames += $"{(await vm.GetArticleByIdAsync(oi.ArticleId)).ArticleName}, ";
-                    });
-
-                    vm.orderviewItems.Add(newItem);
-                    DatagridXAML.Items.Add(newItem);
-                });
+                await CreateOrderViewItems();
             }
         }
         public Order GetSelectedOrder()
@@ -68,23 +46,7 @@ namespace WPFUI.Views
                     OrderViewItem SelectedOrder = (OrderViewItem)DatagridXAML.Items.GetItemAt(DatagridXAML.SelectedIndex);
                     if (await vm.DeleteOrder(SelectedOrder.Id))
                     {
-                        (await vm.GetOrdersAsync()).ForEach(async order => {
-                            var newItem = new OrderViewItem();
-                            newItem.Id = order.Id;
-                            newItem.OrderName = order.OrderName;
-                            newItem.RecipientName = (await vm.GetRecipientByIdAsync(order.RecipientId)).Name;
-                            newItem.ArticleAmount = 0;
-                            newItem.ArticleNames = "";
-                            // newItem.DeliveryDay = order.DeliveryDay;
-
-                            (await vm.orderItemsService.GetOrderItemsByOrderAsync(order.Id)).ForEach(async oi =>
-                            {
-                                newItem.ArticleAmount += oi.Amount;
-                                newItem.ArticleNames += $"{(await vm.GetArticleByIdAsync(oi.ArticleId)).ArticleName}, ";
-                            });
-
-                            vm.orderviewItems.Add(newItem);
-                        });
+                        await CreateOrderViewItems();
                         DatagridXAML.Items.Clear();
                         DatagridXAML.ItemsSource = vm.orderviewItems;
                     } else
@@ -92,10 +54,39 @@ namespace WPFUI.Views
                         throw new Exception("Deletion failed.");
                     }
                 }
-            } catch (Exception ex)
+            } catch (Exception ep)
             {
-                Log.Log($"Delete Order failed due to {ex}");
+                Log.Log($"Delete Order failed due to {ep.Message}");
             }
+        }
+
+        private async Task CreateOrderViewItems()
+        {
+            (await vm.GetOrdersAsync()).ForEach(async order => {
+                var newItem = new OrderViewItem();
+                newItem.Id = order.Id;
+                newItem.OrderName = order.OrderName;
+                newItem.RecipientName = (await vm.GetRecipientByIdAsync(order.RecipientId)).Name;
+                newItem.ArticleAmount = 0;
+                newItem.ArticleNames = "";
+                // newItem.DeliveryDay = order.DeliveryDay;
+
+                try
+                {
+                    (await vm.orderItemsService.GetOrderItemsByOrderAsync(order.Id)).ForEach(async oi =>
+                    {
+                        newItem.ArticleAmount += oi.Amount;
+                        newItem.ArticleNames += $"{(await vm.GetArticleByIdAsync(oi.ArticleId)).ArticleName}, ";
+                    });
+                }
+                catch (Exception ep)
+                {
+                    Log.Log($"Something went wrong while loading data due to: {ep.Message}");
+                }
+
+                vm.orderviewItems.Add(newItem);
+                DatagridXAML.Items.Add(newItem);
+            });
         }
 
         private void SearchOrder(object sender, RoutedEventArgs e)
@@ -109,9 +100,9 @@ namespace WPFUI.Views
                 });
 
             }
-            catch (WarningException ex)
+            catch (WarningException ep)
             {
-                Log.Log($"Search Orders went wrong due to: {ex.Message}");
+                Log.Log($"Search Orders went wrong due to: {ep.Message}");
             }
         }
 
@@ -124,8 +115,14 @@ namespace WPFUI.Views
         {
             if (DatagridXAML.SelectedItem != null)
             {
-                var ovi = (OrderViewItem)DatagridXAML.Items.GetItemAt(DatagridXAML.SelectedIndex);
-                Application.Current.MainWindow.DataContext = new EditOrderArticlesViewModel(await vm.ordersAPI.GetOrderByIdAsync(ovi.Id), await vm.orderItemsService.GetOrderItemsByOrderAsync(ovi.Id));
+                try
+                {
+                    var ovi = (OrderViewItem)DatagridXAML.Items.GetItemAt(DatagridXAML.SelectedIndex);
+                    Application.Current.MainWindow.DataContext = new EditOrderArticlesViewModel(await vm.ordersAPI.GetOrderByIdAsync(ovi.Id), await vm.orderItemsService.GetOrderItemsByOrderAsync(ovi.Id));
+                } catch (Exception ep)
+                {
+                    Log.Log($"Going to edit Order went wrong due to: {ep.Message}");
+                }
             }
         }
 

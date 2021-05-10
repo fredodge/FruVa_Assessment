@@ -32,8 +32,14 @@ namespace WPFUI.Views
                     addArticleAmount.Items.Add(i);
                     removeArticleAmount.Items.Add(i);
                 }
-                (await vm.GetArticlesAsync()).ForEach(article => DatagridChooseArticleXAML.Items.Add(article));
-                vm.orderItems.ForEach(async orderItem => AddArticleOrderItem(CreateArticleOrderItem(await vm.GetArticleByIdAsync(orderItem.ArticleId), orderItem)));
+                try
+                {
+                    (await vm.GetArticlesAsync()).ForEach(article => DatagridChooseArticleXAML.Items.Add(article));
+                    vm.orderItems.ForEach(async orderItem => AddArticleOrderItem(CreateArticleOrderItem(await vm.GetArticleByIdAsync(orderItem.ArticleId), orderItem)));
+                } catch (WarningException ep)
+                {
+                    Log.Log($"Something went wrong while loading data due to: {ep}");
+                }
             }
         }
 
@@ -47,9 +53,9 @@ namespace WPFUI.Views
                 });
 
             }
-            catch (WarningException ex)
+            catch (WarningException ep)
             {
-                Log.Log($"Search Articles went wrong due to: {ex.Message}");
+                Log.Log($"Search Articles went wrong due to: {ep.Message}");
             }
         }
 
@@ -82,7 +88,7 @@ namespace WPFUI.Views
             if (DatagridCartXAML.SelectedItem != null)
             {
                 var articleOrderItem = ((ArticleOrderItem)DatagridCartXAML.Items.GetItemAt(DatagridCartXAML.SelectedIndex));
-                var removeAmount = (int)removeArticleAmount.SelectedItem;
+                var removeAmount = removeArticleAmount.SelectedItem != null ? (int)removeArticleAmount.SelectedItem : 1;
 
                 DatagridCartXAML.Items.Remove(DatagridCartXAML.SelectedItem);
                 if (articleOrderItem.Amount - removeAmount < 1)
